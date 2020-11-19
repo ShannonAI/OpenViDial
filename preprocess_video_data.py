@@ -8,6 +8,7 @@
 @time: 2020/11/11 20:06
 @desc: tokenize texts and extract image features
 todo: add Faster-RCNN-based features
+todo: 其实直接将每一句都按顺序存下来就行，然后再FairSeqDataset类的length中再通过eos拼接的方式把同一个group的拼接到一起。
 
 """
 
@@ -24,7 +25,7 @@ from sacremoses import MosesTokenizer
 from torchvision import transforms
 from tqdm import tqdm
 
-from data.utils import sent_num_file, offsets_file, feature_file, concat_text_file, img_file
+from video_dialogue_model.data.utils import sent_num_file, offsets_file, feature_file, src_file, img_file
 
 TOKENIZER = MosesTokenizer(lang='en')
 
@@ -47,11 +48,11 @@ def load_origin_texts(data_dir) -> List[List[str]]:
     return output
 
 
-def iterate_imgs_according_texts(origin_dir, group_texts: List[List[str]]) -> List[str]:
-    """get image-paths according to texts"""
+def iterate_imgs(origin_dir, sent_num: np.array) -> List[str]:
+    """get image-paths according to sent-num array"""
     output = []
-    for group_idx, texts in enumerate(group_texts):
-        for sent_idx in range(len(texts)):
+    for group_idx in range(sent_num.shape[0]):
+        for sent_idx in range(sent_num[group_idx]):
             output.append(img_file(origin_dir, group_idx, sent_idx))
     return output
 
@@ -85,11 +86,15 @@ def main():
     parser = argparse.ArgumentParser(description='video-data pre-processing.')
 
     parser.add_argument('--origin-dir', required=True,
-                        help='MS-COCO data directory.')
+                        help='origin data directory.')
     parser.add_argument('--output-dir', required=True,
-                        help='Output directory.')
+                        help='output directory.')
     parser.add_argument('--batch_size', type=int, default=32,
                         help='batch size when processing image')
+    parser.add_argument('--max_sent', type=int, default=5,
+                        help='max history sentence number in src')
+    parser.add_argument('--split', type=str, default="train",
+                        help='split of dataset, train/valid/test')
     args = parser.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)
@@ -97,27 +102,27 @@ def main():
     # Load text
     group_texts = load_origin_texts(args.origin_dir)
 
-    # tokenize text  todo
-    with open(concat_text_file(args.output_dir), "w") as fout:
-        for group_text in group_texts:
+    # tokenize text
+    with open(src_file(args.output_dir, args.split), "w") as fsrc:
+        for group_idx, group_text in enumerate(group_texts):
             tokenized_group = tokenize_text(group_text)
-            out_line = " [SEP] ".join(tokenized_group)
-            fout.write(out_line + "\n")
+            for src in tokenized_group:
+                fsrc.write(src + "\n")
 
-    # compute image offsets/nums
+    # compute group offsets/nums
     sent_num = np.array([len(g) for g in group_texts])
     sent_cumsum = np.cumsum(sent_num)
     total_sent = int(sent_cumsum[-1])
     offsets = np.insert(sent_cumsum[: -1], obj=0, values=0)
-    np.save(sent_num_file(args.output_dir), sent_num)
-    np.save(offsets_file(args.output_dir), offsets)
+    np.save(sent_num_file(args.output_dir, args.split), sent_num)
+    np.save(offsets_file(args.output_dir, args.split), offsets)
 
     # compute image features
     total_num = sum(len(g) for g in group_texts)
-    feature_map = np.memmap(feature_file(args.output_dir), dtype='float32', mode='w+', shape=(total_num, FEATURE_DIM))
+    feature_map = np.memmap(feature_file(args.output_dir, args.split), dtype='float32', mode='w+', shape=(total_num, FEATURE_DIM))
     idx = 0
-    for batch_img_files in tqdm(chunked(iterate_imgs_according_texts(origin_dir=args.origin_dir,
-                                                                     group_texts=group_texts),
+    for batch_img_files in tqdm(chunked(iterate_imgs(origin_dir=args.origin_dir,
+                                                     sent_num=sent_num),
                                         args.batch_size),
                                 total=(total_sent // args.batch_size)):
         features = extract_image_feature(batch_img_files).cpu().numpy()
