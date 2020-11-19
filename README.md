@@ -1,5 +1,12 @@
 # Video-dialogue-model
 
+## Requirements
+pip install -r `requirements.txt`
+### Notes: 
+you may encounter a bug when trying to use `fairseq-generate` under torch>1.5.0, please refer to [this github issue](https://github.com/pytorch/fairseq/issues/2460) to resolve it.
+### Todo:
+upgrade to fairseq==0.10.0
+
 ## Preprocess data
 可以参考sample_data中存放的数据
 ### Origin data
