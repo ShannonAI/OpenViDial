@@ -6,6 +6,8 @@ pip install -r `requirements.txt`
 you may encounter a bug when trying to use `fairseq-generate` under torch>1.5.0, please refer to [this github issue](https://github.com/pytorch/fairseq/issues/2460) to resolve it.
 ### Todo:
 upgrade to fairseq==0.10.0
+在预测sentence_t时，允许不使用image_t
+将图片直接作为input_sequences拼进去
 
 ## Preprocess data
 可以参考sample_data中存放的数据

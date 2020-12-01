@@ -7,6 +7,9 @@ from fairseq.tasks import register_task, FairseqTask
 from fairseq.tasks.translation import TranslationTask
 from video_dialogue_model.data.feature_dataset import FeatureDataset
 from video_dialogue_model.data.text_and_image_dataset import TextImageDataset
+from video_dialogue_model.data.text_and_object_dataset import TextObjectDataset
+from video_dialogue_model.data.object_dataset import ObjectDataset
+
 
 # import model.image_transformer
 
@@ -17,8 +20,10 @@ class VideoDialogueTask(FairseqTask):
     def add_args(parser):
         parser.add_argument('--data-dir', default='output',
                             help='data directory')
-        parser.add_argument('--max_src_sent', type=int, default=5,
+        parser.add_argument('--max-src-sent', type=int, default=5,
                             help='max source sentence num')
+        parser.add_argument('--img-type', type=str, default="objects", choices=["features", "objects"],
+                            help='image feature types')
 
     @classmethod
     def setup_task(cls, args, **kwargs):
@@ -31,7 +36,7 @@ class VideoDialogueTask(FairseqTask):
         super().__init__(args)
         self.vocab_dict = vocab_dict
 
-    def load_dataset(self, split, **kwargs):
+    def load_text_image_dataset(self, split, **kwargs):
         features_dataset = FeatureDataset(self.args.data_dir)
         span_idxs = self.item2span_idxs(sent_num=features_dataset.sent_num,
                                         max_src_sent=self.args.max_src_sent)
@@ -44,6 +49,25 @@ class VideoDialogueTask(FairseqTask):
                                                 vocab_dict=self.vocab_dict,
                                                 span_idxs=span_idxs,
                                                 shuffle=True if split == "train" else False)
+
+    def load_text_object_dataset(self, split, **kwargs):
+        objects_dataset = ObjectDataset(self.args.data_dir)
+        span_idxs = self.item2span_idxs(sent_num=objects_dataset.sent_num,
+                                        max_src_sent=self.args.max_src_sent)
+
+        text_file = text_bin_file(self.args.data_dir, split)  # os.path.join(self.args.data_dir, split)
+        text_dataset = data_utils.load_indexed_dataset(text_file, self.vocab_dict)
+
+        self.datasets[split] = TextObjectDataset(text_dataset=text_dataset,
+                                                 image_dataset=objects_dataset,
+                                                 vocab_dict=self.vocab_dict,
+                                                 span_idxs=span_idxs,
+                                                 shuffle=True if split == "train" else False)
+
+    def load_dataset(self, split, **kwargs):
+        if self.args.img_type == "features":
+            return self.load_text_image_dataset(split, **kwargs)
+        return self.load_text_object_dataset(split, **kwargs)
 
     @staticmethod
     def item2span_idxs(sent_num: np.array, max_src_sent: int) -> np.array:

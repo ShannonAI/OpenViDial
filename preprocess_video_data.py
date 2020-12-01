@@ -8,7 +8,6 @@
 @time: 2020/11/11 20:06
 @desc: tokenize texts and extract image features
 todo: add Faster-RCNN-based features
-todo: 其实直接将每一句都按顺序存下来就行，然后再FairSeqDataset类的length中再通过eos拼接的方式把同一个group的拼接到一起。
 
 """
 
@@ -22,6 +21,7 @@ import torch
 from PIL import Image
 from more_itertools import chunked
 from sacremoses import MosesTokenizer
+import torchvision
 from torchvision import transforms
 from tqdm import tqdm
 
@@ -29,7 +29,8 @@ from video_dialogue_model.data.utils import sent_num_file, offsets_file, feature
 
 TOKENIZER = MosesTokenizer(lang='en')
 
-CNN = torch.hub.load('pytorch/vision:v0.7.0', 'resnet50', pretrained=True)
+os.environ['TORCH_HOME'] = '/userhome/yuxian/torch_models'  # setting the environment variables
+CNN = torchvision.models.resnet50(pretrained=True)
 FEATURE_DIM = 1000
 DEVICE = "cuda:0"
 CNN.to(DEVICE)
@@ -130,6 +131,8 @@ def main():
         for img_idx in range(img_num):
             feature_map[idx + img_idx] = features[img_idx]
         idx += img_num
+
+    # todo(yuxian) gather image object infos here
 
 
 if __name__ == '__main__':

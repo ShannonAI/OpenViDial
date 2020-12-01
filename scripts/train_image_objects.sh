@@ -1,11 +1,12 @@
 export CUDA_VISIBLE_DEVICES=3
-fairseq-train \
+#fairseq-train \
+python train.py \
   --save-dir /data/yuxian/train_logs/debug \
   --user-dir video_dialogue_model \
   --task video-dialogue \
-  --img-type "features" \
+  --img-type "objects" \
   --data-dir sample_data/preprocessed_data \
-  --arch baseline-img-transformer \
+  --arch baseline-obj-transformer \
   --encoder-layers 3 \
   --decoder-layers 3 \
   --encoder-embed-dim 512 \
@@ -18,4 +19,4 @@ fairseq-train \
   --weight-decay 0.0001 \
   --max-epoch 100 \
   --keep-last-epochs 5 \
-  --ddp-backend=no_c10d
+  --ddp-backend=no_c10d \

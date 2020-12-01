@@ -1,1 +1,2 @@
 from .image_transformer import TransformerModel
+from .object_transformer import ObjTransformerModel

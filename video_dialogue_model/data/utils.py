@@ -24,6 +24,14 @@ def feature_file(data_dir, split):
     return os.path.join(data_dir, f"{split}.features.mmap")
 
 
+def object_file(data_dir, split):
+    return os.path.join(data_dir, f"{split}.objects.mmap")
+
+
+def object_mask_file(data_dir, split):
+    return os.path.join(data_dir, f"{split}.objects_mask.mmap")
+
+
 def src_file(data_dir, split):
     return os.path.join(data_dir, f"{split}.src.txt")
 

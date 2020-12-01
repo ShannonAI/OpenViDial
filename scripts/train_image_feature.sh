@@ -4,6 +4,7 @@ python train.py \
   --save-dir /data/yuxian/train_logs/debug \
   --user-dir video_dialogue_model \
   --task video-dialogue \
+  --img-type "features" \
   --data-dir sample_data/preprocessed_data \
   --arch baseline-img-transformer \
   --encoder-layers 3 \
