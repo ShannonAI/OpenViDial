@@ -25,13 +25,24 @@ import torchvision
 from torchvision import transforms
 from tqdm import tqdm
 
-from video_dialogue_model.data.utils import sent_num_file, offsets_file, feature_file, src_file, img_file
+from video_dialogue_model.data.utils import (
+    sent_num_file,
+    offsets_file,
+    feature_file,
+    src_file,
+    img_file,
+    object_file,
+    object_mask_file
+)
 
 TOKENIZER = MosesTokenizer(lang='en')
 
-os.environ['TORCH_HOME'] = '/userhome/yuxian/torch_models'  # setting the environment variables
+# os.environ['TORCH_HOME'] = '/userhome/yuxian/torch_models'  # setting the environment variables
+# os.environ['TORCH_HOME'] = '/userhome/yuxian/torch_models'  # setting the environment variables
 CNN = torchvision.models.resnet50(pretrained=True)
-FEATURE_DIM = 1000
+CNN_FEATURE_DIM = 1000
+RCNN_FEATURE_DIM = 2048
+MAX_OBJECTS = 100
 DEVICE = "cuda:0"
 CNN.to(DEVICE)
 
@@ -96,6 +107,10 @@ def main():
                         help='max history sentence number in src')
     parser.add_argument('--split', type=str, default="train",
                         help='split of dataset, train/valid/test')
+    parser.add_argument('--rcnn_feature', default=False, action="store_true",
+                        help='gather rcnn feature memmap')
+    parser.add_argument('--cnn_feature', default=False, action="store_true",
+                        help='gather cnn feature memmap')
     args = parser.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)
@@ -118,21 +133,40 @@ def main():
     np.save(sent_num_file(args.output_dir, args.split), sent_num)
     np.save(offsets_file(args.output_dir, args.split), offsets)
 
-    # compute image features
     total_num = sum(len(g) for g in group_texts)
-    feature_map = np.memmap(feature_file(args.output_dir, args.split), dtype='float32', mode='w+', shape=(total_num, FEATURE_DIM))
-    idx = 0
-    for batch_img_files in tqdm(chunked(iterate_imgs(origin_dir=args.origin_dir,
-                                                     sent_num=sent_num),
-                                        args.batch_size),
-                                total=(total_sent // args.batch_size)):
-        features = extract_image_feature(batch_img_files).cpu().numpy()
-        img_num = features.shape[0]
-        for img_idx in range(img_num):
-            feature_map[idx + img_idx] = features[img_idx]
-        idx += img_num
 
-    # todo(yuxian) gather image object infos here
+    # compute cnn feature
+    if args.cnn_feature:
+        feature_map = np.memmap(feature_file(args.output_dir, args.split), dtype='float32', mode='w+', shape=(total_num, CNN_FEATURE_DIM))
+        idx = 0
+        for batch_img_files in tqdm(chunked(iterate_imgs(origin_dir=args.origin_dir,
+                                                         sent_num=sent_num),
+                                            args.batch_size),
+                                    total=(total_sent // args.batch_size),
+                                    desc="Computing CNN feature"
+                                    ):
+            features = extract_image_feature(batch_img_files).cpu().numpy()
+            img_num = features.shape[0]
+            for img_idx in range(img_num):
+                feature_map[idx + img_idx] = features[img_idx]
+            idx += img_num
+
+    # gather rcnn feature
+    if args.rcnn_feature:
+        objects = np.memmap(object_file(args.output_dir, args.split), dtype=np.float32, mode='w+',
+                            shape=(total_num, MAX_OBJECTS, RCNN_FEATURE_DIM))
+        objects_mask = np.memmap(object_mask_file(args.output_dir, args.split), dtype=np.bool, mode='w+',
+                                 shape=(total_num, MAX_OBJECTS))
+        rcnn_dir = os.path.join(args.output_dir, "rcnn_feature")
+        for img_idx, img_file in tqdm(enumerate(iterate_imgs(origin_dir=args.origin_dir, sent_num=sent_num)),
+                                      desc="Gathering Faster-RCNN feature"):
+            npy_file = img_file.replace(args.origin_dir, rcnn_dir)[: -3] + "npy"
+            rcnn_features = np.load(npy_file, allow_pickle=True)[()]
+            objects_features = rcnn_features["features"]
+            num_object = objects_features.shape[0]
+            objects[img_idx][: num_object] = objects_features
+            objects_mask[img_idx][: num_object] = True
+            objects_mask[img_idx][num_object: ] = False
 
 
 if __name__ == '__main__':

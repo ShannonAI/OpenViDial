@@ -29,4 +29,14 @@ upgrade to fairseq==0.10.0
     offsets.npy  # offsets[i]存储src中前i-1行一共有多少句话(也即多少个图)
     sent_num.npy # sent_num[o]存储src中第i行有多少句话
     img_features.npy  # 按顺序存储
+    rcnn_feature  # mask-rcnn bboxes
+      └── feature_dir0
+             └── 0.npy
+             └── 1.npy
+             └── ...
 ```
+
+### Preprocess pipelines
+1. (Optional) install mask-rcnn and use pretrained-model to generate object-detection features in `preprocessed_data_dir/rcnn_feature`.
+You can also download the preprocessed rcnn directory from [here](todo) and put it to `preprocessed_data_dir`
+1. use `preprocess_video_data.py` to tokenize-text and extract CNN features in `preprocessed_data_dir`

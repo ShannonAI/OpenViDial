@@ -10,40 +10,22 @@
 
 """
 
-
-from collections import namedtuple
-import math
-import math
-from typing import Any, Dict, List, Optional, Tuple
+import random
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
-from fairseq import options, utils
 from fairseq.models import (
-    FairseqEncoder,
-    FairseqIncrementalDecoder,
-    FairseqEncoderDecoderModel,
     register_model,
     register_model_architecture,
-)
-from fairseq.modules import (
-    LayerNorm,
-    PositionalEmbedding,
-    SinusoidalPositionalEmbedding,
-    TransformerEncoderLayer,
 )
 from fairseq.models.transformer import (
     TransformerModel,
     TransformerEncoder,
     TransformerDecoder,
-    Embedding,
     EncoderOut,
     base_architecture as transformer_base_architecture
 )
-
-import random
 
 DEFAULT_MAX_SOURCE_POSITIONS = 1024
 DEFAULT_MAX_TARGET_POSITIONS = 1024
@@ -69,8 +51,6 @@ class ObjTransformerModel(TransformerModel):
 
     def __init__(self, args, encoder, decoder):
         super().__init__(args, encoder, decoder)
-        self.args = args
-        self.supports_align_args = True
 
     def forward(self, src_tokens, objs, objs_mask, src_lengths, prev_output_tokens, **kwargs):
         """
