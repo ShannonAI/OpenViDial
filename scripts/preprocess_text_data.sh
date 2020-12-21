@@ -27,18 +27,21 @@ OUT_DIR="sample_data/preprocessed_data"  # output dir
 
 
 # fairseq binarize
+# We use '--only-source' here because we want to determine window size later.
+#DATA_DIR="/home/mengyuxian/video-dialogue-model/sample_data/preprocessed_data/"
+#fairseq_pref="${DATA_DIR}/src-tgt.src"
+#echo "Generate vocabulary and train dataset files ..."
 
-# option 1 nmt
-
-
-# option 2 lm
-DATA_DIR="/home/mengyuxian/video-dialogue-model/sample_data/preprocessed_data/"
-fairseq_pref="${DATA_DIR}/src-tgt.src"  # todo 区分train/valid/test
+DATA_DIR="/data/yuxian/datasets/video/preprocessed_data"
+OUT_DIR="/data/yuxian/datasets/video/preprocessed_data"
+#fairseq_pref="${DATA_DIR}/train.src.txt"
 echo "Generate vocabulary and train dataset files ..."
+
 
 fairseq-preprocess \
 --only-source  \
 --destdir $OUT_DIR \
---trainpref $fairseq_pref \
---validpref $fairseq_pref \
---testpref $fairseq_pref
+--trainpref $DATA_DIR/train.src.txt \
+--validpref $DATA_DIR/dev.src.txt \
+--testpref $DATA_DIR/test.src.txt \
+--workers 8

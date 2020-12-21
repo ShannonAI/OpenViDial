@@ -37,7 +37,7 @@ class VideoDialogueTask(FairseqTask):
         self.vocab_dict = vocab_dict
 
     def load_text_image_dataset(self, split, **kwargs):
-        features_dataset = FeatureDataset(self.args.data_dir)
+        features_dataset = FeatureDataset(self.args.data_dir, split)
         span_idxs = self.item2span_idxs(sent_num=features_dataset.sent_num,
                                         max_src_sent=self.args.max_src_sent)
 
@@ -51,7 +51,7 @@ class VideoDialogueTask(FairseqTask):
                                                 shuffle=True if split == "train" else False)
 
     def load_text_object_dataset(self, split, **kwargs):
-        objects_dataset = ObjectDataset(self.args.data_dir)
+        objects_dataset = ObjectDataset(self.args.data_dir, split)
         span_idxs = self.item2span_idxs(sent_num=objects_dataset.sent_num,
                                         max_src_sent=self.args.max_src_sent)
 

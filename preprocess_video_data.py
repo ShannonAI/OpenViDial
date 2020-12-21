@@ -7,8 +7,6 @@
 @file: preprocess_video_data
 @time: 2020/11/11 20:06
 @desc: tokenize texts and extract image features
-todo: add Faster-RCNN-based features
-
 """
 
 import argparse
@@ -17,13 +15,10 @@ import os
 from typing import List
 
 import numpy as np
-import torch
-from PIL import Image
 from more_itertools import chunked
 from sacremoses import MosesTokenizer
-import torchvision
-from torchvision import transforms
 from tqdm import tqdm
+import logging
 
 from video_dialogue_model.data.utils import (
     sent_num_file,
@@ -35,63 +30,42 @@ from video_dialogue_model.data.utils import (
     object_mask_file
 )
 
+
 TOKENIZER = MosesTokenizer(lang='en')
 
 # os.environ['TORCH_HOME'] = '/userhome/yuxian/torch_models'  # setting the environment variables
-# os.environ['TORCH_HOME'] = '/userhome/yuxian/torch_models'  # setting the environment variables
-CNN = torchvision.models.resnet50(pretrained=True)
-CNN_FEATURE_DIM = 1000
+os.environ['CUDA_VISIBLE_DEVICES'] = "0,"
 RCNN_FEATURE_DIM = 2048
 MAX_OBJECTS = 100
-DEVICE = "cuda:0"
-CNN.to(DEVICE)
 
 
-def load_origin_texts(data_dir) -> List[List[str]]:
+def load_origin_texts(data_dir, split="train") -> List[List[str]]:
     """load origin text data"""
     output = []
-    with open(os.path.join(data_dir, 'src.jsonl')) as fin:
+    input_path = os.path.join(data_dir, f'{split}.src.jsonl')
+    logging.info(f"Loading origin data from {input_path}")
+    with open(input_path) as fin:
         for line in fin:
             line = line.strip()
             if not line:
                 continue
             sents = json.loads(line)
-    output.append(sents)
+            output.append(sents)
+    logging.info(f"Loaded {sum(len(x) for x in output)} sentences from {input_path}")
     return output
 
 
-def iterate_imgs(origin_dir, sent_num: np.array) -> List[str]:
+def iterate_imgs(img_dir, sent_num: np.array) -> List[str]:
     """get image-paths according to sent-num array"""
     output = []
     for group_idx in range(sent_num.shape[0]):
         for sent_idx in range(sent_num[group_idx]):
-            output.append(img_file(origin_dir, group_idx, sent_idx))
+            output.append(img_file(img_dir, group_idx, sent_idx))
     return output
 
 
 def tokenize_text(texts: List[str]):
     return [TOKENIZER.tokenize(t, return_str=True) for t in texts]
-
-
-def extract_image_feature(filenames: List[str]):
-    """extract features from image files"""
-    input_images = [Image.open(fname) for fname in filenames]
-    preprocess = transforms.Compose([
-        transforms.Resize(256),
-        transforms.CenterCrop(224),  # todo CenterCrop可能会漏掉长屏幕的信息，待优化
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-    ])
-    input_tensors = [preprocess(img) for img in input_images]
-    input_batch = torch.stack(input_tensors)
-
-    # move the input and model to GPU for speed if available
-    if torch.cuda.is_available():
-        input_batch = input_batch.to(DEVICE)
-
-    with torch.no_grad():
-        features = CNN(input_batch)
-    return features
 
 
 def main():
@@ -107,16 +81,16 @@ def main():
                         help='max history sentence number in src')
     parser.add_argument('--split', type=str, default="train",
                         help='split of dataset, train/valid/test')
-    parser.add_argument('--rcnn_feature', default=False, action="store_true",
+    parser.add_argument('--rcnn_feature', action="store_true",
                         help='gather rcnn feature memmap')
-    parser.add_argument('--cnn_feature', default=False, action="store_true",
+    parser.add_argument('--cnn_feature', action="store_true",
                         help='gather cnn feature memmap')
     args = parser.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)
 
     # Load text
-    group_texts = load_origin_texts(args.origin_dir)
+    group_texts = load_origin_texts(args.origin_dir, args.split)
 
     # tokenize text
     with open(src_file(args.output_dir, args.split), "w") as fsrc:
@@ -137,9 +111,11 @@ def main():
 
     # compute cnn feature
     if args.cnn_feature:
-        feature_map = np.memmap(feature_file(args.output_dir, args.split), dtype='float32', mode='w+', shape=(total_num, CNN_FEATURE_DIM))
+        from cnn_utils import CNN_FEATURE_DIM, extract_image_feature
+        feature_map = np.memmap(feature_file(args.output_dir, args.split), dtype='float32', mode='w+',
+                                shape=(total_num, CNN_FEATURE_DIM))
         idx = 0
-        for batch_img_files in tqdm(chunked(iterate_imgs(origin_dir=args.origin_dir,
+        for batch_img_files in tqdm(chunked(iterate_imgs(img_dir=os.path.join(args.origin_dir, f"{args.split}_images"),
                                                          sent_num=sent_num),
                                             args.batch_size),
                                     total=(total_sent // args.batch_size),
@@ -166,7 +142,7 @@ def main():
             num_object = objects_features.shape[0]
             objects[img_idx][: num_object] = objects_features
             objects_mask[img_idx][: num_object] = True
-            objects_mask[img_idx][num_object: ] = False
+            objects_mask[img_idx][num_object:] = False
 
 
 if __name__ == '__main__':

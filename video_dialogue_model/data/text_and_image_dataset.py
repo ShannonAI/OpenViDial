@@ -43,11 +43,11 @@ class TextImageDataset(FairseqDataset):
         return len(self.span_idxs)
 
     def get_1doffsets(self, group_idx, sent_idx):
-        idx = int(self.img_dataset.offsets[group_idx])
-        sent_num = int(self.img_dataset.sent_num[idx])
+        group_offset = int(self.img_dataset.offsets[group_idx])
+        sent_num = int(self.img_dataset.sent_num[group_idx])
         assert sent_idx < sent_num, f"origin text group {group_idx} has {sent_num} sents, " \
                                     f" sent_idx {sent_idx} should be less than {sent_num}"
-        return idx + sent_idx
+        return group_offset + sent_idx
 
     def num_tokens(self, index):
         """Return the number of tokens in a sample. This value is used to

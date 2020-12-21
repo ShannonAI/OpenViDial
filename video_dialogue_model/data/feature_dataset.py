@@ -38,7 +38,14 @@ class FeatureDataset(Dataset):
 
 def test_feature_dataset():
     from tqdm import tqdm
-    d = FeatureDataset(data_dir="../../sample_data/preprocessed_data")
+    # d = FeatureDataset(data_dir="../../sample_data/preprocessed_data")
+    # 生成假的features
+    import numpy as np
+    data_dir = "/data/yuxian/datasets/video/preprocessed_data"
+    for split, total_num in zip(["train", "dev", "test"], [939766, 74757, 62137]):
+        np.memmap(feature_file(data_dir, split), mode="w+", dtype=np.float32, shape=(total_num, 1000))
+
+    d = FeatureDataset(data_dir="/data/yuxian/datasets/video/preprocessed_data", split="test")
     for x in tqdm(d):
         print(x.shape)
         print(x)

@@ -16,13 +16,15 @@ from video_dialogue_model import VideoDialogueTask
 
 def video_task():
     class Args:
-        data_dir = "/home/mengyuxian/video-dialogue-model/sample_data/preprocessed_data"
+        data_dir = "/data/yuxian/datasets/video/preprocessed_data"
+        # data_dir = "../sample_data/preprocessed_data"
         max_src_sent = 5
-
+        img_type = "features"
+    split = "valid"
     task = VideoDialogueTask.setup_task(args=Args)
-    task.load_dataset("train")
-    dataset = task.datasets["train"]
-    print(dataset[0])
+    task.load_dataset(split)
+    dataset = task.datasets[split]
+    print(dataset[len(dataset)-1])
 
 
 if __name__ == '__main__':

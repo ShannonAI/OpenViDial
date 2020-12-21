@@ -120,7 +120,7 @@ class ImageTransformerEncoder(TransformerEncoder):
         x = embed = self.embed_scale * self.embed_tokens(src_tokens)
 
         # concat imgs features and reduce dimension
-        if self.use_img is not None:
+        if self.use_img:
             assert src_imgs is not None
             # [B, T, C']
             token_img_idxs = torch.cumsum((src_tokens == self.dictionary.eos_index).long(), dim=1).unsqueeze(-1).expand([-1, -1, self.img_dim])
