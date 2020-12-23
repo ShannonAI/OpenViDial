@@ -2,10 +2,7 @@
 
 ## Requirements
 pip install -r `requirements.txt`
-### Notes: 
-you may encounter a bug when trying to use `fairseq-generate` under torch>1.5.0, please refer to [this github issue](https://github.com/pytorch/fairseq/issues/2460) to resolve it.
 ### Todo:
-upgrade to fairseq==0.10.0
 在预测sentence_t时，允许不使用image_t
 
 ## Preprocess data
@@ -20,9 +17,10 @@ todo 去除中文字幕
     └── train_images
              └── img_dir0  # dir_i里存储的是src中第i行对应的每一句话的图片
                      └── 0.jpg
+                     └── 0.jpg.npy # faster-rcnn feature
                      └── 1.jpg
                      └── ...
-                        ...
+                 ...
               ...
     └── valid_images
     └── test_images
@@ -36,11 +34,6 @@ todo 去除中文字幕
     train.features.mmap  # 按顺序存储
     train.objects.mmap  # faster-rcnn object feature
     train.objects_mask.mmap  # faster-rcnn object mask
-    rcnn_feature  # mask-rcnn bboxes
-      └── feature_dir0
-             └── 0.npy
-             └── 1.npy
-             └── ...
 ```
 
 ### Preprocess pipelines
@@ -48,6 +41,8 @@ todo 去除中文字幕
 #### Tokenize and build sentence-offsets
 We use Moses Tokenizer to tokenize texts:
 `bash scripts/preprocess_video_data.sh`
+and followed with byte-pair-encoding and fairseq-preprocess binarization
+`bash scripts/preprocess_text_data.sh`
 
 todo(yuxian): we should train/apply bpe to corpus
 

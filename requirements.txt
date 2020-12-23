@@ -2,6 +2,6 @@ more_itertools
 torch >= 1.6.0
 sacremoses==0.0.35
 subword-nmt==0.3.6
-fairseq==0.9.0
+fairseq==0.10.1
 opencv-python
 tqdm

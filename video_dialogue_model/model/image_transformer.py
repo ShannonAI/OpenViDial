@@ -10,7 +10,7 @@
 
 """
 
-import random
+from typing import Optional
 
 import torch
 import torch.nn as nn
@@ -115,10 +115,13 @@ class ImageTransformerEncoder(TransformerEncoder):
 
         self.use_img = args.use_img
 
-    def forward_embedding(self, src_tokens, src_imgs=None):
+    def forward_embedding(
+        self, src_tokens, src_imgs=None, token_embedding: Optional[torch.Tensor] = None
+    ):
         # embed tokens and positions
-        x = embed = self.embed_scale * self.embed_tokens(src_tokens)
-
+        if token_embedding is None:
+            token_embedding = self.embed_tokens(src_tokens)
+        x = embed = self.embed_scale * token_embedding
         # concat imgs features and reduce dimension
         if self.use_img:
             assert src_imgs is not None
@@ -131,12 +134,22 @@ class ImageTransformerEncoder(TransformerEncoder):
 
         if self.embed_positions is not None:
             x = embed + self.embed_positions(src_tokens)
-        if self.layernorm_embedding:
+        if self.layernorm_embedding is not None:
             x = self.layernorm_embedding(x)
-        x = F.dropout(x, p=self.dropout, training=self.training)
+        x = self.dropout_module(x)
+        if self.quant_noise is not None:
+            x = self.quant_noise(x)
         return x, embed
 
-    def forward(self, src_tokens, src_imgs, src_lengths, cls_input=None, return_all_hiddens=False, **unused):
+    def forward(
+        self,
+        src_tokens,
+        src_imgs,
+        src_lengths,
+        cls_input=None,
+        return_all_hiddens=False,
+        token_embeddings: Optional[torch.Tensor] = None,
+    ):
         """
         Args:
             src_tokens (LongTensor): tokens in the source language of shape
@@ -147,6 +160,8 @@ class ImageTransformerEncoder(TransformerEncoder):
                 shape `(batch)`
             return_all_hiddens (bool, optional): also return all of the
                 intermediate hidden states (default: False).
+            token_embeddings (torch.Tensor, optional): precomputed embeddings
+                default `None` will recompute embeddings
 
         Returns:
             namedtuple:
@@ -160,40 +175,33 @@ class ImageTransformerEncoder(TransformerEncoder):
                   hidden states of shape `(src_len, batch, embed_dim)`.
                   Only populated if *return_all_hiddens* is True.
         """
-        if self.layer_wise_attention:
-            return_all_hiddens = True
-
-        x, encoder_embedding = self.forward_embedding(src_tokens, src_imgs)
+        x, encoder_embedding = self.forward_embedding(src_tokens, src_imgs, token_embeddings)
 
         # B x T x C -> T x B x C
         x = x.transpose(0, 1)
 
         # compute padding mask
         encoder_padding_mask = src_tokens.eq(self.padding_idx)
-        if not encoder_padding_mask.any():
-            encoder_padding_mask = None
 
         encoder_states = [] if return_all_hiddens else None
 
         # encoder layers
         for layer in self.layers:
-            # add LayerDrop (see https://arxiv.org/abs/1909.11556 for description)
-            dropout_probability = random.uniform(0, 1)
-            if not self.training or (dropout_probability > self.encoder_layerdrop):
-                x = layer(x, encoder_padding_mask)
-                if return_all_hiddens:
-                    encoder_states.append(x)
-
-        if self.layer_norm:
-            x = self.layer_norm(x)
+            x = layer(x, encoder_padding_mask)
             if return_all_hiddens:
-                encoder_states[-1] = x
+                assert encoder_states is not None
+                encoder_states.append(x)
+
+        if self.layer_norm is not None:
+            x = self.layer_norm(x)
 
         return EncoderOut(
             encoder_out=x,  # T x B x C
             encoder_padding_mask=encoder_padding_mask,  # B x T
             encoder_embedding=encoder_embedding,  # B x T x C
             encoder_states=encoder_states,  # List[T x B x C]
+            src_tokens=None,
+            src_lengths=None,
         )
 
 

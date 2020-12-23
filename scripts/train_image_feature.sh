@@ -1,18 +1,32 @@
-export CUDA_VISIBLE_DEVICES=3
-#fairseq-train \
+export CUDA_VISIBLE_DEVICES=0
+
+LR=1e-4
+DROPOUT=0.3
+LAYER=3
+
+LOG_DIR="/userhome/yuxian/train_logs/video/image_features/layer${LAYER}_lr${LR}_bsz128_drop${DROPOUT}"
+#LOG_DIR="/data/yuxian/train_logs/video/layer${LAYER}_lr${LR}_bsz128_drop${DROPOUT}"
+DATA_DIR="/userhome/yuxian/data/video/preprocessed_data"
+#DATA_DIR="/data/yuxian/datasets/video/preprocessed_data"
+#DATA_DIR="/data/yuxian/datasets/new-video/preprocessed_data"
+
+
 python train.py \
-  --save-dir /data/yuxian/train_logs/debug \
+  --fp16 \
+  --save-dir $LOG_DIR \
   --user-dir video_dialogue_model \
   --task video-dialogue \
   --img-type "features" \
-  --data-dir sample_data/preprocessed_data \
+  --data-dir $DATA_DIR \
   --arch baseline-img-transformer \
-  --encoder-layers 3 \
-  --decoder-layers 3 \
+  --encoder-layers $LAYER \
+  --decoder-layers $LAYER \
   --encoder-embed-dim 512 \
-  --dropout 0.0 \
+  --share-decoder-input-output-embed \
+  --dropout $DROPOUT \
   --optimizer adam \
-  --max-sentences 1 \
+  --max-tokens 4000 \
+  --batch-size 128 \
   --adam-betas "(0.9,0.999)" \
   --reset-optimizer \
   --lr 1e-4 \

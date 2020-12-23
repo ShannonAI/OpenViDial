@@ -16,28 +16,41 @@ import torch
 import torchvision
 from PIL import Image
 from torchvision import transforms
+from torch.utils.data import Dataset, DataLoader
+import warnings
 
 CNN = torchvision.models.resnet50(pretrained=True)
+CNN.eval()
 CNN_FEATURE_DIM = 1000
-CNN.cuda()
+if torch.cuda.is_available():
+    CNN = CNN.cuda()
+else:
+    warnings.warn("cuda not available")
 
 
-def extract_image_feature(filenames: List[str]):
-    """extract features from image files"""
-    input_images = [Image.open(fname) for fname in filenames]
-    preprocess = transforms.Compose([
-        transforms.Resize(256),
-        transforms.CenterCrop(224),  # todo CenterCrop可能会漏掉长屏幕的信息，待优化
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-    ])
-    input_tensors = [preprocess(img) for img in input_images]
-    input_batch = torch.stack(input_tensors)
+class ImageDataset(Dataset):
+    def __init__(self, file_names: List[str]):
+        self.file_names = file_names
+        self.preprocess = transforms.Compose([
+            transforms.Resize(256, interpolation=Image.LINEAR),
+            transforms.CenterCrop(224),  # todo CenterCrop可能会漏掉长屏幕的信息，待优化
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ])
 
-    # move the input and model to GPU for speed if available
-    if torch.cuda.is_available():
-        input_batch = input_batch.cuda()
+    def __len__(self):
+        return len(self.file_names)
 
-    with torch.no_grad():
-        features = CNN(input_batch)
-    return features
+    def __getitem__(self, item):
+        return self.preprocess(Image.open(self.file_names[item]))
+
+
+def get_dataloader(file_names, batch_size, workers):
+    dataset = ImageDataset(file_names)
+    return DataLoader(
+        dataset,
+        num_workers=workers,
+        batch_size=batch_size,
+        shuffle=False,
+        pin_memory=True
+    )

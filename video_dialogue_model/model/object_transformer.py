@@ -10,7 +10,7 @@
 
 """
 
-import random
+from typing import Optional
 
 import torch
 import torch.nn as nn
@@ -110,17 +110,20 @@ class ObjTransformerEncoder(TransformerEncoder):
 
     def __init__(self, args, dictionary, embed_tokens):
         super().__init__(args, dictionary, embed_tokens)
-        # sep = torch.LongTensor(dictionary.sep())
-        # self.register_buffer("sep", sep)
+
         self.token_type_embedding = nn.Embedding(2, args.encoder_embed_dim)  # image/token
         self.image_proj = nn.Linear(2048, args.encoder_embed_dim)
 
-    def forward_embedding(self, src_tokens, objs):
+    def forward_embedding(
+        self, src_tokens, objs, token_embedding: Optional[torch.Tensor] = None
+    ):
         bsz, token_length = src_tokens.size()
         _, sent_num, max_obj, dim = objs.size()
 
-        # embed tokens
-        x = embed = self.embed_scale * self.embed_tokens(src_tokens)
+        # embed tokens and positions
+        if token_embedding is None:
+            token_embedding = self.embed_tokens(src_tokens)
+        x = embed = self.embed_scale * token_embedding
         if self.embed_positions is not None:
             x = embed + self.embed_positions(src_tokens)
         x += self.token_type_embedding(torch.ones_like(src_tokens))
@@ -139,13 +142,24 @@ class ObjTransformerEncoder(TransformerEncoder):
         # bsz, sent_num*max_obj + token_length, dim
         x = torch.cat([y, x], dim=1)
 
-        if self.layernorm_embedding:
+        if self.layernorm_embedding is not None:
             x = self.layernorm_embedding(x)
-        x = F.dropout(x, p=self.dropout, training=self.training)
+        x = self.dropout_module(x)
+        if self.quant_noise is not None:
+            x = self.quant_noise(x)
         # return x, embed
         return x, None
 
-    def forward(self, src_tokens, objs, objs_mask, src_lengths, cls_input=None, return_all_hiddens=False, **unused):
+    def forward(
+        self,
+        src_tokens,
+        objs,
+        objs_mask,
+        src_lengths,
+        cls_input=None,
+        return_all_hiddens=False,
+        token_embeddings: Optional[torch.Tensor] = None,
+    ):
         """
         Args:
             src_tokens (LongTensor): tokens in the source language of shape
@@ -158,6 +172,8 @@ class ObjTransformerEncoder(TransformerEncoder):
                 shape `(batch)`
             return_all_hiddens (bool, optional): also return all of the
                 intermediate hidden states (default: False).
+            token_embeddings (torch.Tensor, optional): precomputed embeddings
+                default `None` will recompute embeddings
 
         Returns:
             namedtuple:
@@ -171,41 +187,33 @@ class ObjTransformerEncoder(TransformerEncoder):
                   hidden states of shape `(src_len, batch, embed_dim)`.
                   Only populated if *return_all_hiddens* is True.
         """
-        if self.layer_wise_attention:
-            return_all_hiddens = True
-
-        x, encoder_embedding = self.forward_embedding(src_tokens, objs)
+        x, encoder_embedding = self.forward_embedding(src_tokens, objs, token_embeddings)
 
         # B x T x C -> T x B x C
         x = x.transpose(0, 1)
 
         # compute padding mask
-        bsz = src_tokens.size(0)
-        encoder_padding_mask = torch.cat([objs_mask.view(bsz, -1), src_tokens.eq(self.padding_idx)], dim=-1)
-        if not encoder_padding_mask.any():
-            encoder_padding_mask = None
+        encoder_padding_mask = src_tokens.eq(self.padding_idx)
 
         encoder_states = [] if return_all_hiddens else None
 
         # encoder layers
         for layer in self.layers:
-            # add LayerDrop (see https://arxiv.org/abs/1909.11556 for description)
-            dropout_probability = random.uniform(0, 1)
-            if not self.training or (dropout_probability > self.encoder_layerdrop):
-                x = layer(x, encoder_padding_mask)
-                if return_all_hiddens:
-                    encoder_states.append(x)
-
-        if self.layer_norm:
-            x = self.layer_norm(x)
+            x = layer(x, encoder_padding_mask)
             if return_all_hiddens:
-                encoder_states[-1] = x
+                assert encoder_states is not None
+                encoder_states.append(x)
+
+        if self.layer_norm is not None:
+            x = self.layer_norm(x)
 
         return EncoderOut(
             encoder_out=x,  # T x B x C
             encoder_padding_mask=encoder_padding_mask,  # B x T
             encoder_embedding=encoder_embedding,  # B x T x C
             encoder_states=encoder_states,  # List[T x B x C]
+            src_tokens=None,
+            src_lengths=None,
         )
 
     def max_positions(self):  # todo(yuxian) 搞清楚在哪里用
