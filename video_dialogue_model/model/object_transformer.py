@@ -187,13 +187,19 @@ class ObjTransformerEncoder(TransformerEncoder):
                   hidden states of shape `(src_len, batch, embed_dim)`.
                   Only populated if *return_all_hiddens* is True.
         """
+        bsz = src_tokens.size(0)
         x, encoder_embedding = self.forward_embedding(src_tokens, objs, token_embeddings)
 
         # B x T x C -> T x B x C
         x = x.transpose(0, 1)
 
         # compute padding mask
-        encoder_padding_mask = src_tokens.eq(self.padding_idx)
+        # B x num_tokens
+        encoder_token_padding_mask = src_tokens.eq(self.padding_idx)
+        # B x (max_sent*num_obj)
+        encoder_obj_padding_mask = objs_mask.view(bsz, -1)
+        # B x T
+        encoder_padding_mask = torch.cat([encoder_obj_padding_mask, encoder_token_padding_mask], dim=-1)
 
         encoder_states = [] if return_all_hiddens else None
 
@@ -220,7 +226,7 @@ class ObjTransformerEncoder(TransformerEncoder):
         """Maximum input length supported by the encoder."""
         if self.embed_positions is None:
             return self.max_source_positions
-        return min(self.max_source_positions, self.embed_positions.max_positions())
+        return min(self.max_source_positions, self.embed_positions.max_positions)
 
 
 @register_model_architecture('obj-transformer', 'baseline-obj-transformer')

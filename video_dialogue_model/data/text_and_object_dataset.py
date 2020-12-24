@@ -50,11 +50,11 @@ class TextObjectDataset(FairseqDataset):
         return len(self.span_idxs)
 
     def get_1doffsets(self, group_idx, sent_idx):
-        idx = int(self.img_dataset.offsets[group_idx])
-        sent_num = int(self.img_dataset.sent_num[idx])
+        group_offset = int(self.img_dataset.offsets[group_idx])
+        sent_num = int(self.img_dataset.sent_num[group_idx])
         assert sent_idx < sent_num, f"origin text group {group_idx} has {sent_num} sents, " \
                                     f" sent_idx {sent_idx} should be less than {sent_num}"
-        return idx + sent_idx
+        return group_offset + sent_idx
 
     def num_tokens(self, index):
         """Return the number of tokens in a sample. This value is used to
@@ -93,11 +93,11 @@ class TextObjectDataset(FairseqDataset):
         for sample in samples:
             index = sample['id']
             indices.append(index)
-
+            sent_num, max_object, rcnn_dim = sample["objects"].shape
             source_objects.append(sample['objects'])  # [sent_num, max_obj, dim]
             objects_mask.append(sample['objects_mask'])  # [sent_num, max_obj]
             source_texts.append(sample['source_texts'])  # [token_num]
-            source_lengths.append(len(sample['source_texts']))
+            source_lengths.append(len(sample['source_texts']) + sent_num*max_object)
 
             targets.append(sample['target'])  # [token_num]
             target_ntokens += len(sample["target"])
