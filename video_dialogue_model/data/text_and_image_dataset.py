@@ -73,8 +73,9 @@ class TextImageDataset(FairseqDataset):
 
     def collater(self, samples):
         """Merge a list of samples to form a mini-batch."""
+        if len(samples) == 0:
+            return {}
         indices = []
-
         source_imgs = []
         source_texts = []
         source_lengths = []

@@ -80,8 +80,10 @@ class TextObjectDataset(FairseqDataset):
 
     def collater(self, samples):
         """Merge a list of samples to form a mini-batch."""
-        indices = []
+        if len(samples) == 0:
+            return {}
 
+        indices = []
         source_objects = []
         objects_mask = []
         source_texts = []
