@@ -1,13 +1,25 @@
 # 1. extract data from origin jsonl file
 
+# normal
 #ORIGIN_DIR="/userhome/yuxian/data/video/origin_data"
 #MMI_DIR="/userhome/yuxian/data/video/preprocessed_mmi_data"
-ORIGIN_DIR="sample_data/origin_data"
-MMI_DIR="sample_data/preprocessed_mmi_data"
-mkdir -p $MMI_DIR
+#ORIGIN_DIR="sample_data/origin_data"
+#MMI_DIR="sample_data/preprocessed_mmi_data"
+#mkdir -p $MMI_DIR
+#for split in "valid" "test" "train"; do
+#  python preprocess_nmt_data.py \
+#    --origin-dir $ORIGIN_DIR \
+#    --output-dir $MMI_DIR \
+#    --split $split
+#done
 
+
+# tmp todo remove this? or use this to bpe. 这样的话就不需要反复bpe了？
+ORIGIN_DIR="/data/yuxian/datasets/new-video/preprocessed_data"
+MMI_DIR="/data/yuxian/datasets/new-video/preprocessed_mmi_data"
+mkdir -p $MMI_DIR
 for split in "valid" "test" "train"; do
-  python preprocess_nmt_data.py \
+  python preprocess_nmt_data_tmp.py \
     --origin-dir $ORIGIN_DIR \
     --output-dir $MMI_DIR \
     --split $split
@@ -26,8 +38,9 @@ done
 
 
 # 3. fairseq binarize
-rm $MMI_DIR/dict* remove dict
+dict_file="/data/yuxian/datasets/new-video/preprocessed_data/dict.txt"
 fairseq-preprocess --source-lang src --target-lang tgt \
+    --srcdict $dict_file --tgtdict $dict_file \
     --trainpref "${MMI_DIR}/train.bpe.src-tgt" \
     --validpref "${MMI_DIR}/valid.bpe.src-tgt" \
     --testpref "${MMI_DIR}/test.bpe.src-tgt" \

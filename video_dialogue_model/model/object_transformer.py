@@ -199,7 +199,7 @@ class ObjTransformerEncoder(TransformerEncoder):
         # B x (max_sent*num_obj)
         encoder_obj_padding_mask = objs_mask.view(bsz, -1)
         # B x T
-        encoder_padding_mask = torch.cat([encoder_obj_padding_mask, encoder_token_padding_mask], dim=-1)
+        encoder_padding_mask = torch.cat([~encoder_obj_padding_mask, encoder_token_padding_mask], dim=-1)
 
         encoder_states = [] if return_all_hiddens else None
 

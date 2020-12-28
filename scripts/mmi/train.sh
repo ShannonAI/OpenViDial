@@ -1,5 +1,5 @@
-DATA_DIR="sample_data/preprocessed_mmi_data"
-SAVE_DIR="/data/yuxian/train_logs/debug_mmi"
+DATA_DIR="/data/yuxian/datasets/new-video/preprocessed_mmi_data"
+SAVE_DIR="/data/yuxian/datasets/new-video/mmi_text"
 
 LAYER=3
 DROPOUT=0.3
@@ -15,7 +15,8 @@ CUDA_VISIBLE_DEVICES=3 fairseq-train $DATA_DIR \
     --decoder-layers $LAYER \
     --encoder-embed-dim 512 \
     --share-decoder-input-output-embed \
-    --max-tokens 4000 \
+    --max-tokens 8000 \
+    --batch-size 128 \
     --max-epoch 20 \
     --optimizer adam --adam-betas '(0.9, 0.98)' \
     --clip-norm 0.0 --lr 3e-4 --lr-scheduler inverse_sqrt \

@@ -197,7 +197,6 @@ def _main(args, output_file):
         )
         num_generated_tokens = sum(len(h[0]["tokens"]) for h in hypos)
         gen_timer.stop(num_generated_tokens)
-
         for i, sample_id in enumerate(sample["id"].tolist()):
             has_target = sample["target"] is not None
 
@@ -221,11 +220,17 @@ def _main(args, output_file):
                 target_str = task.dataset(args.gen_subset).tgt.get_original_text(
                     sample_id
                 )
+                last_src_str = ""
             else:
                 if src_dict is not None:
                     src_str = src_dict.string(src_tokens, args.remove_bpe)
+                    # src_tokens may contain multiple sentence
+                    # we extract the last sent to compute mutual information
+                    last_src_str = src_dict.string(extract_last_sent(src_tokens, src_dict.eos_index),
+                                                args.remove_bpe)
                 else:
                     src_str = ""
+                    last_src_str = ""
                 if has_target:
                     target_str = tgt_dict.string(
                         target_tokens,
@@ -237,12 +242,15 @@ def _main(args, output_file):
                     )
 
             src_str = decode_fn(src_str)
+            last_src_str = decode_fn(last_src_str)
             if has_target:
                 target_str = decode_fn(target_str)
 
             if not args.quiet:
                 if src_dict is not None:
                     print("S-{}\t{}".format(sample_id, src_str), file=output_file)
+                if src_dict is not None:
+                    print("L-{}\t{}".format(sample_id, last_src_str), file=output_file)
                 if has_target:
                     print("T-{}\t{}".format(sample_id, target_str), file=output_file)
 
@@ -371,6 +379,12 @@ def _main(args, output_file):
         )
 
     return scorer
+
+
+def extract_last_sent(src_tokens: torch.LongTensor, eos_idx):
+    cum = torch.cumsum((src_tokens == eos_idx).long(), dim=0)
+    max_id = cum.max() - 1
+    return src_tokens[cum >= max_id]
 
 
 def cli_main():

@@ -10,7 +10,7 @@ pip install -r `requirements.txt`
 todo 去除中文字幕
 ### Origin data
 ```
-├──data_dir
+├──origin_data
     └── train.src.jsonl  # 每行是一轮完整的对话，list of str
     └── valid.src.jsonl  # 每行是一轮完整的对话，list of str
     └── test.src.jsonl  # 每行是一轮完整的对话，list of str
@@ -27,7 +27,7 @@ todo 去除中文字幕
 ```
 ### Preprocessed data
 ```
-├──preprocessed_data_dir
+├──preprocessed_data
     src.txt  # 每行是一轮完整的对话，tokenized后的结果，句子中间用[SEP]隔开
     train.offsets.npy  # offsets[i]存储src中前i-1行一共有多少句话(也即多少个图)
     train.sent_num.npy # sent_num[o]存储src中第i行有多少句话
@@ -75,3 +75,8 @@ and `preprocessed_data_dir/objects_mask.mmap`
 You can download the preprocessed ResNet50 features from [here](todo) and move it as `preprocessed_data_dir/features.mmap`
 ##### (Optional) Preprocess on your own
 1. use `preprocess_video_data.py --cnn_feature ...` to extract CNN features in `preprocessed_data_dir/features.mmap`
+
+
+## Generation and Evaluation
+1. normal generation `scripts/generate.sh`
+2. MMI generation `scripts/mmi/mmi_generate.sh`
