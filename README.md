@@ -79,4 +79,5 @@ You can download the preprocessed ResNet50 features from [here](todo) and move i
 
 ## Generation and Evaluation
 1. normal generation `scripts/generate.sh`
-2. MMI generation `scripts/mmi/mmi_generate.sh`
+1. length/diversity/stopwords% stats `stats.py`
+1. (beta) MMI generation `scripts/mmi/mmi_generate.sh`
