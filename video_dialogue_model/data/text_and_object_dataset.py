@@ -30,6 +30,7 @@ class TextObjectDataset(FairseqDataset):
         self.max_obj = image_dataset.max_obj
 
     def __getitem__(self, index):
+        # todo: try to add [bos] at the beginning of text sequence to separate objects/texts
         group_idx, start_idx, end_idx = self.span_idxs[index].tolist()
         offsets = [self.get_1doffsets(group_idx, sent_idx) for sent_idx in range(start_idx, end_idx+1)]
         objects, object_masks = zip(*[self.img_dataset[idx] for idx in offsets])

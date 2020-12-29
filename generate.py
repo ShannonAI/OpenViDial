@@ -10,6 +10,7 @@ Translate pre-processed data with a trained model.
 import ast
 import logging
 import math
+import json
 import os
 import sys
 from itertools import chain
@@ -328,6 +329,12 @@ def _main(args, output_file):
                                 "E-{}_{}\t{}".format(sample_id, step, h_str),
                                 file=output_file,
                             )
+                    if args.print_attention:
+                        attention = hypo["attention"]
+                        attention_jsonl = json.dumps(attention.cpu().numpy().tolist())
+                        print(
+                            "Z-{}\t{}".format(sample_id, attention_jsonl)
+                        )
 
                 # Score only the top hypothesis
                 if has_target and j == 0:
@@ -389,6 +396,7 @@ def extract_last_sent(src_tokens: torch.LongTensor, eos_idx):
 
 def cli_main():
     parser = options.get_generation_parser()
+    parser.add_argument("--print-attention", action="store_true", help="print attention matrix as jsonline")
     args = options.parse_args_and_arch(parser)
     main(args)
 

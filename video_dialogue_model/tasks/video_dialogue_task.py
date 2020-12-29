@@ -22,6 +22,8 @@ class VideoDialogueTask(FairseqTask):
                             help='data directory')
         parser.add_argument('--max-src-sent', type=int, default=5,
                             help='max source sentence num')
+        parser.add_argument('--max-obj', type=int, default=20,
+                            help='max objects per sentence')
         parser.add_argument('--img-type', type=str, default="objects", choices=["features", "objects"],
                             help='image feature types')
 
@@ -34,6 +36,7 @@ class VideoDialogueTask(FairseqTask):
 
     def __init__(self, args, vocab_dict):
         super().__init__(args)
+        self.args = args
         self.vocab_dict = vocab_dict
 
     def load_text_image_dataset(self, split, **kwargs):
@@ -48,10 +51,11 @@ class VideoDialogueTask(FairseqTask):
                                                 image_dataset=features_dataset,
                                                 vocab_dict=self.vocab_dict,
                                                 span_idxs=span_idxs,
-                                                shuffle=True if split == "train" else False)
+                                                shuffle=True if split == "train" else False,
+                                                )
 
     def load_text_object_dataset(self, split, **kwargs):
-        objects_dataset = ObjectDataset(self.args.data_dir, split)
+        objects_dataset = ObjectDataset(self.args.data_dir, split, max_obj=self.args.max_obj)
         span_idxs = self.item2span_idxs(sent_num=objects_dataset.sent_num,
                                         max_src_sent=self.args.max_src_sent)
 

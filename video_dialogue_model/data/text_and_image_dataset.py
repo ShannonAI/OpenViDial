@@ -96,12 +96,6 @@ class TextImageDataset(FairseqDataset):
 
         num_sentences = len(samples)
 
-        # # FIXME: workaround for edge case in parallel processing
-        # # (framework passes empty samples list
-        # # to collater under certain conditions)
-        # if num_sentences == 0:
-        #     return None
-
         indices = torch.tensor(indices, dtype=torch.long)
 
         max_sent = max(x.size(0) for x in source_imgs)

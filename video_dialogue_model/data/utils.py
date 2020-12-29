@@ -36,6 +36,14 @@ def src_file(data_dir, split):
     return os.path.join(data_dir, f"{split}.src.txt")
 
 
+def nmt_src_file(data_dir, split):
+    return os.path.join(data_dir, f"{split}.src-tgt.src")
+
+
+def nmt_tgt_file(data_dir, split):
+    return os.path.join(data_dir, f"{split}.src-tgt.tgt")
+
+
 def text_bin_file(data_dir, split):
     return os.path.join(data_dir, split)
 

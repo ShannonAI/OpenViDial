@@ -106,7 +106,6 @@ def main():
     # compute group offsets/nums
     sent_num = np.array([len(g) for g in group_texts])
     sent_cumsum = np.cumsum(sent_num)
-    total_sent = int(sent_cumsum[-1])
     offsets = np.insert(sent_cumsum[: -1], obj=0, values=0)
     np.save(sent_num_file(args.output_dir, args.split), sent_num)
     np.save(offsets_file(args.output_dir, args.split), offsets)
@@ -115,7 +114,7 @@ def main():
 
     # compute cnn feature
     if args.cnn_feature:
-        from cnn_utils import CNN_FEATURE_DIM, extract_image_feature, get_dataloader, CNN
+        from cnn_utils import CNN_FEATURE_DIM, get_dataloader, CNN
         feature_map = np.memmap(feature_file(args.output_dir, args.split), dtype='float32', mode='w+',
                                 shape=(total_num, CNN_FEATURE_DIM))
         idx = 0
@@ -140,17 +139,26 @@ def main():
                                  shape=(total_num, MAX_OBJECTS))
         # rcnn_dir = os.path.join(args.output_dir, "rcnn_feature")
         # rcnn_dir = os.path.join(args.output_dir, "rcnn_feature")
-        for img_idx, img_file in tqdm(enumerate(iterate_imgs(img_dir=os.path.join(args.origin_dir, f"{args.split}_images"),
-                                                             sent_num=sent_num)),
-                                      desc="Gathering Faster-RCNN feature"):
-            # npy_file = img_file.replace(args.origin_dir, rcnn_dir)[: -3] + "npy"
-            npy_file = img_file + ".npy"
-            rcnn_features = np.load(npy_file, allow_pickle=True)[()]
-            objects_features = rcnn_features["features"]
-            num_object = objects_features.shape[0]
-            objects[img_idx][: num_object] = objects_features
-            objects_mask[img_idx][: num_object] = True
-            objects_mask[img_idx][num_object:] = False
+        success = [False] * total_num
+        while not all(success):
+            for img_idx, img_file in tqdm(enumerate(iterate_imgs(img_dir=os.path.join(args.origin_dir, f"{args.split}_images"),
+                                                                 sent_num=sent_num)),
+                                          desc="Gathering Faster-RCNN feature"):
+                try:
+                    if success[img_idx]:
+                        continue
+                    # npy_file = img_file.replace(args.origin_dir, rcnn_dir)[: -3] + "npy"
+                    npy_file = img_file + ".npy"
+                    rcnn_features = np.load(npy_file, allow_pickle=True)[()]
+                    objects_features = rcnn_features["features"]
+                    num_object = objects_features.shape[0]
+                    objects[img_idx][: num_object] = objects_features
+                    objects_mask[img_idx][: num_object] = True
+                    objects_mask[img_idx][num_object:] = False
+                    success[img_idx] = True
+                except Exception as e:
+                    print(e)
+                    continue
 
 
 if __name__ == '__main__':

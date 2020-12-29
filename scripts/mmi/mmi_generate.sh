@@ -4,10 +4,10 @@ export CUDA_VISIBLE_DEVICES=3
 
 DATA_DIR="/data/yuxian/datasets/new-video/preprocessed_data"
 #MODEL_DIR="/data/yuxian/datasets/new-video/models/text"
-MODEL_DIR="/data/yuxian/datasets/new-video/models/feature_lr3e-4"
-TYPE="features"
-#MODEL_DIR="/data/yuxian/datasets/new-video/models/object_lr2e-4"
-#TYPE="objects"
+#MODEL_DIR="/data/yuxian/datasets/new-video/models/feature_lr3e-4"
+#TYPE="features"
+MODEL_DIR="/data/yuxian/datasets/new-video/models/object_lr2e-4"
+TYPE="objects"
 MODEL_PATH="${MODEL_DIR}/checkpoint_best.pt"
 NBEST=10
 BEAM=10
@@ -76,7 +76,7 @@ done
 
 
 # 4. weight average score.forward and score.backward for MMI generation
-ALPHA=0.0001
+ALPHA=0.5
 BIRECTION_OUTPUT="${NBEST_DIR}/bidirection${ALPHA}.out"
 python scripts/mmi/combine_bidirectional_score.py \
   --nbest-dir=$NBEST_DIR \
