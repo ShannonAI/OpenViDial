@@ -44,38 +44,16 @@ We use Moses Tokenizer to tokenize texts:
 and followed with byte-pair-encoding and fairseq-preprocess binarization
 `bash scripts/preprocess_text_data.sh`
 
-todo(yuxian): we should train/apply bpe to corpus
-
-#### Extracting Faster-RCNN features
-##### Download
+#### Donwload Preprocessed Image Features
+##### Download Faster-RCNN features
 You can download the preprocessed rcnn directory from [here](todo) and move it as `preprocessed_data_dir/objects.mmap`
 and `preprocessed_data_dir/objects_mask.mmap`
-##### (Optional) Preprocess on your own
-install mask-rcnn and use pretrained-model to generate object-detection features in `preprocessed_data_dir/rcnn_feature`.
-1. Install [`vqa-maskrcnn-benchmark`](https://gitlab.com/vedanuj/vqa-maskrcnn-benchmark) repository and download the model and config. 
 
-```text
-cd data
-wget https://dl.fbaipublicfiles.com/vilbert-multi-task/detectron_model.pth
-wget https://dl.fbaipublicfiles.com/vilbert-multi-task/detectron_config.yaml
-```
-
-2. Extract features for images
-
-Run from root directory
-
-```text
-python script/extract_features.py --model_file data/detectron_model.pth --config_file data/detectron_config.yaml --image_dir <path_to_directory_with_images> --output_folder <path_to_output_extracted_features>
-```
-3. use `preprocess_video_data.py --rcnn_feature ...` to extract RCNN features in `preprocessed_data_dir/objects.mmap`
-and `preprocessed_data_dir/objects_mask.mmap`
-
-#### Extracting CNN-pooling features
-##### Download
+##### Download CNN-pooling features
 You can download the preprocessed ResNet50 features from [here](todo) and move it as `preprocessed_data_dir/features.mmap`
-##### (Optional) Preprocess on your own
-1. use `preprocess_video_data.py --cnn_feature ...` to extract CNN features in `preprocessed_data_dir/features.mmap`
 
+##### Extract features on your own
+please refer to `./data_README.md`
 
 ## Generation and Evaluation
 1. normal generation `scripts/generate.sh`
