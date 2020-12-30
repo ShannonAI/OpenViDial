@@ -6,7 +6,8 @@
 @version: 1.0
 @file: stats
 @time: 2020/12/26 14:37
-@desc: 
+@desc: This file includes helper metrics we used in our paper to
+       compute statistics of model outputs
 
 """
 from sacremoses import MosesTokenizer
@@ -18,9 +19,11 @@ class BaseMetric:
         pass
 
     def update(self, line):
+        """update stats values given a line of system output"""
         raise NotImplementedError
 
     def __repr__(self):
+        """print final stats over all lines of system output"""
         raise NotImplementedError
 
 

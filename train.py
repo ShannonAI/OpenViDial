@@ -5,6 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 """
 Train a new model on one or across multiple GPUs.
+We basically copy this file from `fairseq.train.py` for debugging purpose.
 """
 
 import argparse

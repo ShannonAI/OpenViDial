@@ -7,7 +7,6 @@ pip install -r `requirements.txt`
 
 ## Preprocess data
 可以参考sample_data中存放的数据
-todo 去除中文字幕
 ### Origin data
 ```
 ├──origin_data
@@ -55,7 +54,25 @@ You can download the preprocessed ResNet50 features from [here](todo) and move i
 ##### Extract features on your own
 please refer to `./data_README.md`
 
+## Baselines for this dataset
+We provide scripts to reproduce three baselines for this dataset.
+
+
+todo add picture here
+### binarize data
+todo add scripts here
+
+### Text Only Model
+`scripts/reproduce_baselines.sh`
+
+### Coarse Visual Model
+`scripts/text_and_img_feature.sh`
+
+### Fine Visual Model
+todo This model blabla copy from paper
+`scripts/text_and_img_objects.sh`
+
+
 ## Generation and Evaluation
-1. normal generation `scripts/generate.sh`
 1. length/diversity/stopwords% stats `stats.py`
 1. (beta) MMI generation `scripts/mmi/mmi_generate.sh`
