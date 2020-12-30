@@ -29,7 +29,7 @@ fairseq-train \
   --reset-optimizer \
   --lr-scheduler inverse_sqrt --warmup-init-lr 1e-07 --warmup-updates $WARMUP \
   --lr $LR \
-  --max-epoch 1 \
+  --max-epoch 20 \
   --keep-last-epochs 5 \
   --ddp-backend=no_c10d
 
@@ -38,7 +38,6 @@ fairseq-train \
 OUTPUT="${MODEL_DIR}/gen.out"
 python generate.py \
   --user-dir video_dialogue_model \
-  --print-attention \
   --task video-dialogue \
   --img-type $TYPE \
   --data-dir $DATA_DIR \
