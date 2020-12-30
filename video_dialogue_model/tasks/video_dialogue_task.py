@@ -4,14 +4,10 @@ import numpy as np
 from fairseq.data import Dictionary, data_utils
 from video_dialogue_model.data.utils import text_bin_file
 from fairseq.tasks import register_task, FairseqTask
-from fairseq.tasks.translation import TranslationTask
 from video_dialogue_model.data.feature_dataset import FeatureDataset
 from video_dialogue_model.data.text_and_image_dataset import TextImageDataset
 from video_dialogue_model.data.text_and_object_dataset import TextObjectDataset
 from video_dialogue_model.data.object_dataset import ObjectDataset
-
-
-# import model.image_transformer
 
 
 @register_task('video-dialogue')
