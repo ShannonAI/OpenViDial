@@ -1,5 +1,5 @@
 # Directory structure
-Note: every `train*` file or directory should have a 'valid' and a 'test' counterpart, we ignore them below for simplicity.
+**Note: every `train*` file or directory should have a 'valid' and a 'test' counterpart, we ignore them below for simplicity.**
 ```
 ├──origin_dir
       └── train.src.txt // each line has a raw sentence. This file has `num_sents` lines
