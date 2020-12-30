@@ -1,9 +1,7 @@
 # Video-dialogue-model
-
+This repo contains dataset introduction and three baselines in paper `todo`
 ## Requirements
 pip install -r `requirements.txt`
-### Todo:
-在预测sentence_t时，允许不使用image_t
 
 ## Preprocess data
 可以参考sample_data中存放的数据
@@ -55,10 +53,13 @@ You can download the preprocessed ResNet50 features from [here](todo) and move i
 please refer to `./data_README.md`
 
 ## Baselines for this dataset
-We provide scripts to reproduce three baselines for this dataset.
-
-
+We proposed three baselines for this dataset, blabla todo
 todo add picture here
+
+We provide scripts to reproduce three baselines for this dataset.
+The only thing you should change for your training/generation procedure
+is to change the `DATA_DIR`, `MODEL_DIR` and `OUTPUT` variable to your own path.
+
 ### binarize data
 todo add scripts here
 
