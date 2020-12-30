@@ -5,6 +5,9 @@
 # LICENSE file in the root directory of this source tree.
 """
 Translate pre-processed data with a trained model.
+
+We basically copy this file from `fairseq.generate.py` and
+change this file a little bit to generate attention scores and other stuff.
 """
 
 import ast
