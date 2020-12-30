@@ -14,7 +14,6 @@ from typing import Optional
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from fairseq.models import (
     register_model,
     register_model_architecture,
@@ -135,7 +134,6 @@ class ObjTransformerEncoder(TransformerEncoder):
         y = img_obj_emb + img_type_emb
         if self.embed_positions is not None:
             # [bsz, sent_num*max_obj, dim]  todo(yuxian): rethink about this position embedding
-            # img_pos_emb = self.embed_positions(torch.ones_like(objs[:, :, 0, 0].long())).expand(-1, sent_num*max_obj, -1)
             img_pos_emb = self.embed_positions(torch.ones_like(objs[:, :, 0, 0].long())).repeat(1, max_obj, 1)
             y = y + img_pos_emb
 
