@@ -1,45 +1,37 @@
-# Video-dialogue-model
-This repo contains dataset introduction and three baselines in paper `todo`
-## Requirements
-pip install -r `requirements.txt`
+# OpenViDial
+This repo contains introduction and donwload methods of **OpenViDial** dataset, 
+which is  proposed in paper [《todo》](todo). 
 
-## Preprocess data
-可以参考sample_data中存放的数据
-### Origin data
-```
-├──origin_data
-    └── train.src.jsonl  # 每行是一轮完整的对话，list of str
-    └── valid.src.jsonl  # 每行是一轮完整的对话，list of str
-    └── test.src.jsonl  # 每行是一轮完整的对话，list of str
-    └── train_images
-             └── img_dir0  # dir_i里存储的是src中第i行对应的每一句话的图片
-                     └── 0.jpg
-                     └── 0.jpg.npy # faster-rcnn feature
-                     └── 1.jpg
-                     └── ...
-                 ...
-              ...
-    └── valid_images
-    └── test_images
-```
-### Preprocessed data
-```
-├──preprocessed_data
-    src.txt  # 每行是一轮完整的对话，tokenized后的结果，句子中间用[SEP]隔开
-    train.offsets.npy  # offsets[i]存储src中前i-1行一共有多少句话(也即多少个图)
-    train.sent_num.npy # sent_num[o]存储src中第i行有多少句话
-    train.features.mmap  # 按顺序存储
-    train.objects.mmap  # faster-rcnn object feature
-    train.objects_mask.mmap  # faster-rcnn object mask
-```
+It also contains codes to reproduce three baselines. (See Section [Baselines](#baselines))
 
-### Preprocess pipelines
+## Dataset
 
-#### Tokenize and build sentence-offsets
-We use Moses Tokenizer to tokenize texts:
-`bash scripts/preprocess_video_data.sh`
-and followed with byte-pair-encoding and fairseq-preprocess binarization
-`bash scripts/preprocess_text_data.sh`
+### Introduction
+When humans converse, what a speaker will
+say next significantly depends on what he sees.
+Unfortunately, existing dialogue models generate
+dialogue utterances only based on preceding
+textual contexts, and visual contexts
+are rarely considered. This is due to a lack
+of a large-scale multi-module dialogue dataset
+with utterances paired with visual contexts.
+In this paper, we release OpenViDial, a largescale
+multi-module dialogue dataset. The dialogue
+turns and visual contexts are extracted
+from movies and TV series, where each dialogue
+turn is paired with the corresponding
+visual context in which it takes place. Open-
+ViDial contains a total number of 1.1 million
+dialogue turns, and thus 1.1 million visual contexts
+stored in images.
+
+
+### Download Data
+todo(shuhe)
+1. download link
+2. post-process shell (car * > ...)
+3. directory structure.
+
 
 #### Donwload Preprocessed Image Features
 ##### Download Faster-RCNN features
@@ -52,27 +44,58 @@ You can download the preprocessed ResNet50 features from [here](todo) and move i
 ##### Extract features on your own
 please refer to `./data_README.md`
 
-## Baselines for this dataset
-We proposed three baselines for this dataset, blabla todo
-todo add picture here
+## Baselines
+We proposed three baselines for this dataset:
+* Model #1 - NoVisual: use only dialog texts without visual information
+
+<div align="center">
+  <img src="demo_data/model1.png"/>
+</div>
+
+* Model #2 - CoarseVisual: use texts and a pretrained ResNet50 on ImageNet to compute 1024-d feature from each picture
+
+<div align="center">
+  <img src="demo_data/model2.png"/>
+</div>
+
+* Model #3 - FineVisual: use texts and a pretrained Faster R-CNN on Genome to compute 2048-d * K objects features from each picture
+
+<div align="center">
+  <img src="demo_data/model3.png"/>
+</div>
+
+Faster R-CNN is an object detection framework, the detection sample and Attention over objects during text decoding is shown below.
+
+<div align="center">
+  <img src="demo_data/model3.png"/>
+</div>
 
 We provide scripts to reproduce three baselines for this dataset.
-The only thing you should change for your training/generation procedure
+The only thing you should change for your preprocessing/training/generation procedure
 is to change the `DATA_DIR`, `MODEL_DIR` and `OUTPUT` variable to your own path.
 
-### binarize data
-todo add scripts here
+### Requirements
+To use our codebase, firstly please install requirements by
+`pip install -r requirements.txt`
+
+### Preprocess text data
+todo(shuhe)
+We use Moses Tokenizer to tokenize texts:
+[todo](todo)
+and followed with byte-pair-encoding and fairseq-preprocess binarization
+[todo](todo)
+
+### Donwload pre-computed CNN features and Faster-RCNN features
+todo(shuhe)
 
 ### Text Only Model
-`scripts/reproduce_baselines.sh`
+See [scripts/reproduce_baselines/text_only.sh](scripts/reproduce_baselines/text_only.sh)
 
 ### Coarse Visual Model
-`scripts/text_and_img_feature.sh`
+See [scripts/reproduce_baselines/text_and_img_feature.sh](scripts/reproduce_baselines/text_and_img_feature.sh)
 
 ### Fine Visual Model
-todo This model blabla copy from paper
-`scripts/text_and_img_objects.sh`
-
+See [scripts/reproduce_baselines/text_and_img_objects.sh](scripts/reproduce_baselines/text_and_img_objects.sh)
 
 ## Generation and Evaluation
 1. length/diversity/stopwords% stats `stats.py`
