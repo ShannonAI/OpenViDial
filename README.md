@@ -53,19 +53,19 @@ You can download the full dataset as follows:
 
 ## Models
 We proposed three models for this dataset:
-* Model #1 - NoVisual: use only dialog texts without visual information
+* **Model #1 - NoVisual**: use only dialog texts without visual information
 
 <div align="center">
   <img src="demo_data/model1.png"/>
 </div>
 
-* Model #2 - CoarseVisual: use texts and a pretrained ResNet50 on ImageNet to compute 1000-d feature from each picture
+* **Model #2 - CoarseVisual**: use texts and a pretrained ResNet50 on ImageNet to compute 1000-d feature from each picture
 
 <div align="center">
   <img src="demo_data/model2.png"/>
 </div>
 
-* Model #3 - FineVisual: use texts and a pretrained Faster R-CNN on Genome to compute 2048-d * K objects features from each picture
+* **Model #3 - FineVisual**: use texts and a pretrained Faster R-CNN on Genome to compute 2048-d * K objects features from each picture
 
 <div align="center">
   <img src="demo_data/model3.png"/>
@@ -108,12 +108,12 @@ and followed with byte-pair-encoding and fairseq-preprocess binarization:
 
 ##### Download CNN-pooling features(Used for Model #2 - CoarseVisual)
 Preprocessed ResNet50 features (`*.features.mmap`) 
-[can be downloaded from here](https://drive.google.com/drive/folders/1ixH93LrlVtbKN81VCrSDK_9Y1FH4CiTD?usp=sharing)
+[(~4G) can be downloaded from here](https://drive.google.com/drive/folders/1ixH93LrlVtbKN81VCrSDK_9Y1FH4CiTD?usp=sharing)
 and move them under `preprocessed_data_dir/`
 
 ##### Download Faster R-CNN features(Used for Model #3 - FineVisual)
-Preprocessed Faster R-CNN objects features (`*objects.mmap` and `*objects_mask.mmap`) 
-[can be downloaded from here](https://drive.google.com/drive/folders/1_pCmwXcUZv35E9p3sqPeQcdKgGHVZEr7?usp=sharing)
+Preprocessed Faster R-CNN objects features (`*objects.mmap`, `*objects_mask.mmap`) 
+[(~160G) can be downloaded from here](https://drive.google.com/drive/folders/1_pCmwXcUZv35E9p3sqPeQcdKgGHVZEr7?usp=sharing)
 then move them under `preprocessed_data_dir/`
 
 Since file `train.objects.mmap` is too large(100G+), 
