@@ -1,5 +1,5 @@
 # OpenViDial
-This repo contains introduction and donwload methods of **OpenViDial** dataset, 
+This repo contains introduction and downloading instructions of **OpenViDial** dataset, 
 which is  proposed in paper [《todo》](todo). 
 
 It also contains codes to reproduce three baselines. (See Section [Baselines](#baselines))
@@ -29,20 +29,9 @@ stored in images.
 ### Download Data
 todo(shuhe)
 1. download link
-2. post-process shell (car * > ...)
+2. post-process shell (cat * > ...)
 3. directory structure.
 
-
-#### Donwload Preprocessed Image Features
-##### Download Faster-RCNN features
-You can download the preprocessed rcnn directory from [here](todo) and move it as `preprocessed_data_dir/objects.mmap`
-and `preprocessed_data_dir/objects_mask.mmap`
-
-##### Download CNN-pooling features
-You can download the preprocessed ResNet50 features from [here](todo) and move it as `preprocessed_data_dir/features.mmap`
-
-##### Extract features on your own
-please refer to `./data_README.md`
 
 ## Baselines
 We proposed three baselines for this dataset:
@@ -85,8 +74,17 @@ We use Moses Tokenizer to tokenize texts:
 and followed with byte-pair-encoding and fairseq-preprocess binarization
 [todo](todo)
 
-### Donwload pre-computed CNN features and Faster-RCNN features
+### Prepare pre-computed CNN features and Faster-RCNN features
 todo(shuhe)
+##### Download Faster-RCNN features
+You can download the preprocessed rcnn directory from [here](todo) and move it as `preprocessed_data_dir/objects.mmap`
+and `preprocessed_data_dir/objects_mask.mmap`
+
+##### Download CNN-pooling features
+You can download the preprocessed ResNet50 features from [here](todo) and move it as `preprocessed_data_dir/features.mmap`
+
+##### Extract features on your own(todo)
+please refer to `./data_README.md`
 
 ### Train and Evaluate Text Only Model
 See [scripts/reproduce_baselines/text_only.sh](scripts/reproduce_baselines/text_only.sh)

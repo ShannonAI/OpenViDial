@@ -35,5 +35,5 @@ Run from root directory
 ```text
 python script/extract_features.py --model_file data/detectron_model.pth --config_file data/detectron_config.yaml --image_dir <path_to_directory_with_images> --output_folder <path_to_output_extracted_features>
 ```
-3. use `preprocess_video_data.py --rcnn_feature ...` to extract RCNN features in `preprocessed_data_dir/objects.mmap`
+3. use `preprocess_video_data.py --rcnn_feature ...` to gather R-CNN features from all pictures into `preprocessed_data_dir/objects.mmap`
 and `preprocessed_data_dir/objects_mask.mmap`
