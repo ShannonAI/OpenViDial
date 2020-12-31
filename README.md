@@ -15,6 +15,22 @@ visual context in which it takes place. OpenViDial contains a total number of 1.
 dialogue turns, and thus 1.1 million visual contexts
 stored in images.
 
+We present two short conversations below
+where visual contexts are crucial.
+
+<div align="center">
+  <img src="demo_data/dataset.png"/>
+</div>
+
+### Detailed statistics for OpenViDial
+| Attribute | value |
+| - | - |
+|Number of turns| 1.1M|
+|Number of images |1.1M|
+|Vocab size before |BPE 70K|
+|Vocab size after| BPE 30K|
+|Average length of each episode |14|
+|Average length of each turn|7.6 |
 
 ### Download Data and Visual Features
 origin data directory structure is shown below (**Note: every `train*` file or directory should have a 'valid' and a 'test' counterpart.**)
@@ -86,6 +102,8 @@ We use Moses Tokenizer to tokenize texts and generate offsets arrays:
 `bash ./scripts/preprocess_video_data.sh`
 and followed with byte-pair-encoding and fairseq-preprocess binarization:
 `bash ./scripts/preprocess_text_data.sh`
+
+**Note: You need to change `DATA_DIR, ORIGIN_DIR, OUTPUT_DIR` to your own path**
 
 ### Prepare pre-computed CNN features and Faster-RCNN features
 
