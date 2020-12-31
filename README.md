@@ -64,8 +64,8 @@ The only thing you should change for your preprocessing/training/generation proc
 is to change the `DATA_DIR`, `MODEL_DIR` and `OUTPUT` variable to your own path.
 
 ### Requirements
-To use our codebase, firstly please install requirements by
-`pip install -r requirements.txt`
+* python >= 3.6
+* `pip install -r requirements.txt`
 
 ### Preprocess text data
 todo(shuhe)
@@ -83,8 +83,8 @@ and `preprocessed_data_dir/objects_mask.mmap`
 ##### Download CNN-pooling features
 You can download the preprocessed ResNet50 features from [here](todo) and move it as `preprocessed_data_dir/features.mmap`
 
-##### Extract features on your own(todo)
-please refer to `./data_README.md`
+##### (Optional) Extract features on your own
+See [video_dialogue_model/extract_features/extract_features.md](video_dialogue_model/extract_features/extract_features.md)
 
 ### Train and Evaluate Text Only Model
 See [scripts/reproduce_baselines/text_only.sh](scripts/reproduce_baselines/text_only.sh)
@@ -96,4 +96,4 @@ See [scripts/reproduce_baselines/text_and_img_feature.sh](scripts/reproduce_base
 See [scripts/reproduce_baselines/text_and_img_objects.sh](scripts/reproduce_baselines/text_and_img_objects.sh)
 
 ### Other Statistics
-1. length/diversity/stopwords% stats `stats.py`
+1. get length/diversity/stopwords% statistics of system output: `stats.py`
