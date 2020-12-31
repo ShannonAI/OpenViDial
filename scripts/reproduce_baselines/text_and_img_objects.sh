@@ -10,13 +10,13 @@ MODEL_DIR="/data/yuxian/train_logs/video/images/layer${LAYER}_lr${LR}_bsz128_dro
 mkdir -p $MODEL_DIR
 # data directory
 DATA_DIR="/data/yuxian/datasets/new-video/preprocessed_data"
-
+TYPE="objects"
 
 fairseq-train \
   --save-dir $MODEL_DIR \
   --user-dir video_dialogue_model \
   --task video-dialogue \
-  --img-type "objects" \
+  --img-type $TYPE \
   --max-obj $MAX_OBJ \
   --data-dir $DATA_DIR \
   --arch baseline-obj-transformer \
@@ -39,6 +39,7 @@ fairseq-train \
 
 
 # generate system predictions to OUTPUT
+MODEL_PATH="${MODEL_DIR}/checkpoint_best.th"
 OUTPUT="${MODEL_DIR}/gen.out"
 python generate.py \
   --user-dir video_dialogue_model \
