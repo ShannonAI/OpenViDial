@@ -6,38 +6,27 @@
 @version: 1.0
 @file: preprocess_video_data
 @time: 2020/11/11 20:06
-@desc: tokenize texts and extract image features
+@desc: tokenize texts and extract image features todo(shuhe): should have a cleaner way.
 """
 
 import argparse
 import json
+import logging
 import os
 from typing import List
 
-import torch
 import numpy as np
-from more_itertools import chunked
 from sacremoses import MosesTokenizer
-from tqdm import tqdm
-import logging
 
 from video_dialogue_model.data.utils import (
     sent_num_file,
     offsets_file,
-    feature_file,
-    src_file,
-    img_file,
-    object_file,
-    object_mask_file
+    src_file
 )
 
 
-TOKENIZER = MosesTokenizer(lang='en')
-
-# os.environ['TORCH_HOME'] = '/userhome/yuxian/torch_models'  # setting the environment variables
 os.environ['CUDA_VISIBLE_DEVICES'] = "0,"
-RCNN_FEATURE_DIM = 2048
-MAX_OBJECTS = 100
+TOKENIZER = MosesTokenizer(lang='en')
 
 
 def load_origin_texts(data_dir, split="train") -> List[List[str]]:
@@ -130,7 +119,6 @@ def main():
     np.save(sent_num_file(args.output_dir, args.split), sent_num)
     np.save(offsets_file(args.output_dir, args.split), offsets)
     print(f"Moses tokenization and offsets computing Finished.")
-    total_num = sum(len(g) for g in group_texts)
 
 
 if __name__ == '__main__':
