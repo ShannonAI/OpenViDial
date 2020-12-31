@@ -27,11 +27,21 @@ stored in images.
 
 
 ### Download Data
-todo(shuhe)
-1. download link
-2. post-process shell (cat * > ...)
-3. directory structure.
-
+1. Download `cat.sh`,`train/valid/test.dialogue.jsonl`,`train/valid/test.origin.txt` from the link : `https://drive.google.com/drive/folders/17TTRWbBC0eCNvUz3MLH7eb8fAndjmUA0?usp=sharing` and remove them as setp 5
+2. Download `test_images` from the link : `https://drive.google.com/drive/folders/1yffDmbe2JFxKC0YHNyfRG2SeluO5Cp7v?usp=sharing` and remove them as setp 5
+3. Download `valid_images` from the link : `https://drive.google.com/drive/folders/1ntNlveebdJDE_nIXmnR-APUAdJ-tlo2Y?usp=sharing` and remove them as setp 5
+4. Download `zip_train` from the link : `https://drive.google.com/drive/folders/1Aygv6rTWtvDv7-WLzzOSltHnht_dK80g?usp=sharing` and Run `cat.sh` which you download in the step 1, then remove them as setp 5
+5. Directory structure:  
+    **Note: every `train*` file or directory should have a 'valid' and a 'test' counterpart, we ignore them below for simplicity.**
+    ```
+    ├──origin_dir
+          └── train.origin.txt // each line has a raw sentence. This file has `num_sents` lines
+          └── train.dialogue.jsonl // each line is an episode of dialogue, which contains a list of sentence-id, sentence-id should range from 0 to `num_sents-1`
+          └── train_images // train images directory, contains `num_sents` images.
+                └── 0.jpg
+                └── 1.jpg
+                └── ...
+    ```
 
 ## Baselines
 We proposed three baselines for this dataset:
@@ -63,21 +73,31 @@ Faster R-CNN is an object detection framework. The detection sample and attentio
 * python >= 3.6
 * `pip install -r requirements.txt`
 
+### Preprocess directory structure
+**Note: every `train*` file or directory should have a 'valid' and a 'test' counterpart, we ignore them below for simplicity.**
+```
+├──preprocessed_data_dir
+      └── train.features.mmap  // numpy mmap array file of shape [num_sents, 1024], each row is a 1024-d Resnet-50 feature
+      └── train.objects.mmap  // numpy mmap array file of shape [num_sents, 20, 2048],  faster-rcnn object feature file, each row contain 20 objects feature, which is 2048-d 
+      └── train.objects_mask.mmap  // numpy mmap array file of shape [num_sents, 20],  faster-rcnn mask file, each row contain 20 objects mask, 1 for valid, 0 for mask.
+      └── train.offsets.npy  [todo](todo)(yuxian)
+      └── train.sent_num.npy [todo](todo)(yuxian)
+```
+
 ### Preprocess text data
-todo(shuhe)
 We use Moses Tokenizer to tokenize texts:
-[todo](todo)
-and followed with byte-pair-encoding and fairseq-preprocess binarization
-[todo](todo)
+`bash ./scripts/preprocess_video_data.sh`
+and followed with byte-pair-encoding and fairseq-preprocess binarization:
+`bash ./scripts/preprocess_text_data.sh`
 
 ### Prepare pre-computed CNN features and Faster-RCNN features
-todo(shuhe)
-##### Download Faster-RCNN features
+[todo](todo)(yuxian)
+##### Download Faster-RCNN features  
 You can download the preprocessed rcnn directory from [here](todo) and move it as `preprocessed_data_dir/objects.mmap`
 and `preprocessed_data_dir/objects_mask.mmap`
 
 ##### Download CNN-pooling features
-You can download the preprocessed ResNet50 features from [here](todo) and move it as `preprocessed_data_dir/features.mmap`
+You can download the preprocessed ResNet50 features (train/valid/test.features.mmap) from `https://drive.google.com/drive/folders/17TTRWbBC0eCNvUz3MLH7eb8fAndjmUA0?usp=sharing` and move it as `preprocessed_data_dir/features.mmap`
 
 ##### (Optional) Extract features on your own
 See [video_dialogue_model/extract_features/extract_features.md](video_dialogue_model/extract_features/extract_features.md)
