@@ -6,7 +6,7 @@
 @version: 1.0
 @file: run_resnet
 @time: 2020/12/21 11:54
-@desc: extract 1024-d ResNet50 feature from each picture
+@desc: extract 1000-d ResNet50 feature from each picture
 
 """
 

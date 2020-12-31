@@ -59,7 +59,7 @@ We proposed three models for this dataset:
   <img src="demo_data/model1.png"/>
 </div>
 
-* Model #2 - CoarseVisual: use texts and a pretrained ResNet50 on ImageNet to compute 1024-d feature from each picture
+* Model #2 - CoarseVisual: use texts and a pretrained ResNet50 on ImageNet to compute 1000-d feature from each picture
 
 <div align="center">
   <img src="demo_data/model2.png"/>
