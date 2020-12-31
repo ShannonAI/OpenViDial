@@ -117,7 +117,7 @@ Preprocessed Faster R-CNN objects features (`*objects.mmap`, `*objects_mask.mmap
 then move them under `preprocessed_data_dir/`
 
 Since file `train.objects.mmap` is too large(100G+), 
-we have splitted it to many small pieces like `train.objects.mmap.split*`, 
+we splitted it to many small pieces like `train.objects.mmap.split*`, 
 and you need another step to merge all those files together: `cat * train.objects.mmap.split* >train.objects.mmap`
 
 ##### (Optional) Extract features on your own
