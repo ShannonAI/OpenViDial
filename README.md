@@ -23,6 +23,22 @@ visual context in which it takes place. OpenViDial contains a total number of 1.
 dialogue turns, and thus 1.1 million visual contexts
 stored in images.
 
+We present two short conversations below
+where visual contexts are crucial.
+
+<div align="center">
+  <img src="demo_data/dataset.png"/>
+</div>
+
+### Detailed statistics for OpenViDial
+| Attribute | value |
+| - | - |
+|Number of turns| 1.1M|
+|Number of images |1.1M|
+|Vocab size before |BPE 70K|
+|Vocab size after| BPE 30K|
+|Average length of each episode |14|
+|Average length of each turn|7.6 |
 
 ### Download Data
 origin data directory structure is shown below (**Note: every `train*` file or directory should have a 'valid' and a 'test' counterpart, we ignore them below for simplicity.**)
