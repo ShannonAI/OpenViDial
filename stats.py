@@ -69,7 +69,7 @@ class StopWordsRatioMetric(BaseMetric):
         self.total_stop_words = 0
         self.total_words = 0
         self.stop_words = set()
-        with open("sample_data/stopwords.txt") as fin:
+        with open("video_dialogue_model/data/stopwords.txt") as fin:
             stop_words = set(x.strip() for x in fin.readlines() if x.strip())
             for word in stop_words:
                 for token in TOKENIZER.tokenize(word):
