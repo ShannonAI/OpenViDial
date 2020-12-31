@@ -125,16 +125,16 @@ If you want to extract some feature on your own, or you'd like to know details o
 see [video_dialogue_model/extract_features/extract_features.md](video_dialogue_model/extract_features/extract_features.md)
 
 ### Train and Evaluate Model #1 - NoVisual
-`bash scripts/reproduce_baselines/text_only.sh` will train and evaluate model automatically, 
-but you should correspondingly change `MODEL_DIR` and `DATA_DIR` for your setup
+`bash scripts/reproduce_baselines/text_only.sh` will train and evaluate NoVisual, 
+Remember to change `MODEL_DIR` and `DATA_DIR` for your setup
 
 ### Train and Evaluate Model #2 - CoarseVisual
-`bash scripts/reproduce_baselines/text_and_img_feature.sh` will train and evaluate model automatically, 
-but you should correspondingly change `MODEL_DIR` and `DATA_DIR` for your setup
+`bash scripts/reproduce_baselines/text_and_img_feature.sh` will train and evaluate CoarseVisual.
+Remember to change `MODEL_DIR` and `DATA_DIR` for your setup
 
 ### Train and Evaluate Model #3 - FineVisual
-`bash scripts/reproduce_baselines/text_and_img_objects.sh` will train and evaluate model automatically, 
-but you should correspondingly change `MODEL_DIR` and `DATA_DIR` for your setup
+`bash scripts/reproduce_baselines/text_and_img_objects.sh` will train and evaluate FineVisual, 
+Remember to change `MODEL_DIR` and `DATA_DIR` for your setup
 
 ### Other Statistics
 * get length/diversity/stopwords% statistics of system output: `stats.py`
