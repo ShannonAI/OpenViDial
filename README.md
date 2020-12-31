@@ -1,5 +1,6 @@
 # OpenViDial
-This repo contains downloading instructions for the **OpenViDial** dataset in [《OpenViDial: A Large-Scale, Open-Domain Dialogue Dataset  with Visual Contexts》](), along with the code to reproduce results in the paper  (See Section [Baselines](#baselines)). 
+This repo contains downloading instructions for the **OpenViDial** dataset \\
+in [《OpenViDial: A Large-Scale, Open-Domain Dialogue Dataset  with Visual Contexts》](), along with the code to reproduce results in the paper  (See Section [Baselines](#baselines)). 
 
 ## Dataset
 
