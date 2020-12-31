@@ -86,13 +86,13 @@ You can download the preprocessed ResNet50 features from [here](todo) and move i
 ##### (Optional) Extract features on your own
 See [video_dialogue_model/extract_features/extract_features.md](video_dialogue_model/extract_features/extract_features.md)
 
-### Train and Evaluate Text Only Model
+### Train and Evaluate Model #1 - NoVisual
 See [scripts/reproduce_baselines/text_only.sh](scripts/reproduce_baselines/text_only.sh)
 
-### Train and Evaluate Coarse Visual Model
+### Train and Evaluate Model #2 - CoarseVisual
 See [scripts/reproduce_baselines/text_and_img_feature.sh](scripts/reproduce_baselines/text_and_img_feature.sh)
 
-### Train and Evaluate Fine Visual Model
+### Train and Evaluate Model #3 - FineVisual
 See [scripts/reproduce_baselines/text_and_img_objects.sh](scripts/reproduce_baselines/text_and_img_objects.sh)
 
 ### Other Statistics
