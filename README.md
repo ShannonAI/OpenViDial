@@ -24,8 +24,8 @@ The following are  two short conversations where visual contexts are crucial.
 | - | - |
 |Number of turns| 1.1M|
 |Number of images |1.1M|
-|Vocab size before |BPE 70K|
-|Vocab size after| BPE 30K|
+|Vocab size before BPE | 70K |
+|Vocab size after BPE | 30K |
 |Average length of each episode |14|
 |Average length of each turn|7.6 |
 
@@ -89,7 +89,7 @@ The directory structure is shown below.
 **Note: every `train*` file or directory should have a 'valid' and a 'test' counterpart, we ignore them below for simplicity.**
 ```
 ├──preprocessed_data_dir
-      └── train.features.mmap  // numpy mmap array file of shape [num_sents, 1000], each row is a 1024-d ResNet-50 feature
+      └── train.features.mmap  // numpy mmap array file of shape [num_sents, 1000], each row is a 1000-d ResNet-50 feature
       └── train.objects.mmap  // numpy mmap array file of shape [num_sents, 20, 2048],  faster-rcnn object feature file, each row contain 20 objects feature, which is 2048-d
       └── train.objects_mask.mmap  // numpy mmap array file of shape [num_sents, 20],  faster-rcnn mask file, each row contain 20 objects mask, 1 for valid, 0 for mask
       └── train.offsets.npy  // numpy array file of shape [num_episodes], each item is the offsets of one episode
@@ -107,13 +107,13 @@ and followed with byte-pair-encoding and fairseq-preprocess binarization:
 ### Prepare pre-computed CNN features and Faster-RCNN features
 
 ##### Download CNN-pooling features(Used for Model #2 - CoarseVisual)
-You can download the preprocessed ResNet50 features (`*.features.mmap`) 
-from [here](https://drive.google.com/drive/folders/1ixH93LrlVtbKN81VCrSDK_9Y1FH4CiTD?usp=sharing)
+Preprocessed ResNet50 features (`*.features.mmap`) 
+[can be downloaded from here](https://drive.google.com/drive/folders/1ixH93LrlVtbKN81VCrSDK_9Y1FH4CiTD?usp=sharing)
 and move them under `preprocessed_data_dir/`
 
 ##### Download Faster R-CNN features(Used for Model #3 - FineVisual)
-You can download the preprocessed Faster R-CNN objects features (`*objects.mmap` and `*objects_mask.mmap`) 
-from [here](https://drive.google.com/drive/folders/1_pCmwXcUZv35E9p3sqPeQcdKgGHVZEr7?usp=sharing)
+Preprocessed Faster R-CNN objects features (`*objects.mmap` and `*objects_mask.mmap`) 
+[can be downloaded from here](https://drive.google.com/drive/folders/1_pCmwXcUZv35E9p3sqPeQcdKgGHVZEr7?usp=sharing)
 then move them under `preprocessed_data_dir/`
 
 Since file `train.objects.mmap` is too large(100G+), 
