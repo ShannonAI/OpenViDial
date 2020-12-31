@@ -43,26 +43,50 @@ MAX_OBJECTS = 100
 def load_origin_texts(data_dir, split="train") -> List[List[str]]:
     """load origin text data"""
     output = []
-    input_path = os.path.join(data_dir, f'{split}.src.jsonl')
+    ori_sen = []
+    input_path = os.path.join(data_dir, f'{split}.origin.txt')
     logging.info(f"Loading origin data from {input_path}")
-    with open(input_path) as fin:
-        for line in fin:
+    with open(input_path, "r") as f:
+        for line in f:
             line = line.strip()
             if not line:
                 continue
-            sents = json.loads(line)
-            # output.append(sents)
-            output.append([x.replace("\u2013", "-") for x in sents])  # todo delete after re-generating data
-    logging.info(f"Loaded {sum(len(x) for x in output)} sentences from {input_path}")
+            line.replace("\u2013", "-")
+            ori_sen.append(line)
+        f.close()
+    
+    input_path = os.path.join(data_dir, f'{split}.dialogue.jsonl')
+    with open(input_path, "r") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            ids = json.loads(line)
+            t_list = []
+            for id_ in ids:
+                t_list.append(ori_sen[id_])
+            output.append(t_list)
+        f.close()
+    logging.info(f"Loaded {sum(len(x) for x in output)} sentences from {os.path.join(data_dir, f'{split}.origin.txt')}")
     return output
+    
 
-
-def iterate_imgs(img_dir, sent_num: np.array) -> List[str]:
+def iterate_imgs(img_dir, split, sent_num: np.array) -> List[str]:
     """get image-paths according to sent-num array"""
+    ids = []
+    input_path = os.path.join(img_dir, f'{split}.dialogue.jsonl')
+    with open(input_path, "r") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            ids.append(json.loads(line))
+        f.close()
+    
     output = []
     for group_idx in range(sent_num.shape[0]):
         for sent_idx in range(sent_num[group_idx]):
-            output.append(img_file(img_dir, group_idx, sent_idx))
+            output.append(os.path.join(img_dir, f"{split}_images", f"{ids[group_idx][sent_idx]}.jpg"))
     return output
 
 
@@ -85,10 +109,6 @@ def main():
                         help='max history sentence number in src')
     parser.add_argument('--split', type=str, default="train",
                         help='split of dataset, train/valid/test')
-    parser.add_argument('--rcnn_feature', action="store_true",
-                        help='gather rcnn feature memmap')
-    parser.add_argument('--cnn_feature', action="store_true",
-                        help='gather cnn feature memmap')
     args = parser.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)
@@ -111,54 +131,6 @@ def main():
     np.save(offsets_file(args.output_dir, args.split), offsets)
     print(f"Moses tokenization and offsets computing Finished.")
     total_num = sum(len(g) for g in group_texts)
-
-    # compute cnn feature
-    if args.cnn_feature:
-        from cnn_utils import CNN_FEATURE_DIM, get_dataloader, CNN
-        feature_map = np.memmap(feature_file(args.output_dir, args.split), dtype='float32', mode='w+',
-                                shape=(total_num, CNN_FEATURE_DIM))
-        idx = 0
-        img_dataloder = get_dataloader(file_names=iterate_imgs(img_dir=os.path.join(args.origin_dir,
-                                                                                    f"{args.split}_images"),
-                                                               sent_num=sent_num),
-                                       batch_size=args.batch_size,
-                                       workers=args.workers)
-        for input_batch in tqdm(img_dataloder):
-            with torch.no_grad():
-                features = CNN(input_batch.cuda()).cpu().numpy()
-            img_num = features.shape[0]
-            for img_idx in range(img_num):
-                feature_map[idx + img_idx] = features[img_idx]
-            idx += img_num
-
-    # gather rcnn feature
-    if args.rcnn_feature:
-        objects = np.memmap(object_file(args.output_dir, args.split), dtype=np.float32, mode='w+',
-                            shape=(total_num, MAX_OBJECTS, RCNN_FEATURE_DIM))
-        objects_mask = np.memmap(object_mask_file(args.output_dir, args.split), dtype=np.bool, mode='w+',
-                                 shape=(total_num, MAX_OBJECTS))
-        # rcnn_dir = os.path.join(args.output_dir, "rcnn_feature")
-        # rcnn_dir = os.path.join(args.output_dir, "rcnn_feature")
-        success = [False] * total_num
-        while not all(success):
-            for img_idx, img_file in tqdm(enumerate(iterate_imgs(img_dir=os.path.join(args.origin_dir, f"{args.split}_images"),
-                                                                 sent_num=sent_num)),
-                                          desc="Gathering Faster-RCNN feature"):
-                try:
-                    if success[img_idx]:
-                        continue
-                    # npy_file = img_file.replace(args.origin_dir, rcnn_dir)[: -3] + "npy"
-                    npy_file = img_file + ".npy"
-                    rcnn_features = np.load(npy_file, allow_pickle=True)[()]
-                    objects_features = rcnn_features["features"]
-                    num_object = objects_features.shape[0]
-                    objects[img_idx][: num_object] = objects_features
-                    objects_mask[img_idx][: num_object] = True
-                    objects_mask[img_idx][num_object:] = False
-                    success[img_idx] = True
-                except Exception as e:
-                    print(e)
-                    continue
 
 
 if __name__ == '__main__':
