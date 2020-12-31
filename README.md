@@ -32,8 +32,8 @@ where visual contexts are crucial.
 |Average length of each episode |14|
 |Average length of each turn|7.6 |
 
-### Download Data
-origin data directory structure is shown below (**Note: every `train*` file or directory should have a 'valid' and a 'test' counterpart, we ignore them below for simplicity.**)
+### Download Data and Visual Features
+origin data directory structure is shown below (**Note: every `train*` file or directory should have a 'valid' and a 'test' counterpart.**)
 ```
 ├──origin_dir
       └── train.origin.txt // each line has a raw sentence. This file has `num_sents` lines
@@ -43,9 +43,9 @@ origin data directory structure is shown below (**Note: every `train*` file or d
             └── 1.jpg
             └── ...
 ```
-If you'd like to have a glance of real data while do not like to download large datasets, we provide a data sample [here](https://drive.google.com/drive/folders/17XjJ612wMolkrU-ESW5yv6MnbaclrzoM?usp=sharing)
+If you'd like to take a glance at the a sample of the dataset instead of downloading the full dataset, we provide a data sample [here](https://drive.google.com/drive/folders/17XjJ612wMolkrU-ESW5yv6MnbaclrzoM?usp=sharing)
 
-You can download full dataset in following steps:
+You can download the full dataset as follows:
 1. Download `cat.sh`,`train/valid/test.dialogue.jsonl`,`train/valid/test.origin.txt` from the link : `https://drive.google.com/drive/folders/17TTRWbBC0eCNvUz3MLH7eb8fAndjmUA0?usp=sharing` and move them to origin_dir
 1. Download `test_images` from the link : `https://drive.google.com/drive/folders/1yffDmbe2JFxKC0YHNyfRG2SeluO5Cp7v?usp=sharing` and move them to origin_dir
 1. Download `valid_images` from the link : `https://drive.google.com/drive/folders/1ntNlveebdJDE_nIXmnR-APUAdJ-tlo2Y?usp=sharing` and move them to origin_dir
