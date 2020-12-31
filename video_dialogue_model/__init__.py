@@ -1,3 +1,3 @@
-from .data import *
-from .model import *
-from .tasks import *
+from video_dialogue_model.data import *
+from video_dialogue_model.model import *
+from video_dialogue_model.tasks import *

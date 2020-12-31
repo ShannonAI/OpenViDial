@@ -59,10 +59,6 @@ Faster R-CNN is an object detection framework. The detection sample and attentio
   <img src="demo_data/attention_over_objects.png"/>
 </div>
 
-We provide scripts to reproduce three baselines for this dataset.
-The only thing you should change for your preprocessing/training/generation procedure
-is to change the `DATA_DIR`, `MODEL_DIR` and `OUTPUT` variable to your own path.
-
 ### Requirements
 * python >= 3.6
 * `pip install -r requirements.txt`
@@ -87,13 +83,23 @@ You can download the preprocessed ResNet50 features from [here](todo) and move i
 See [video_dialogue_model/extract_features/extract_features.md](video_dialogue_model/extract_features/extract_features.md)
 
 ### Train and Evaluate Model #1 - NoVisual
-See [scripts/reproduce_baselines/text_only.sh](scripts/reproduce_baselines/text_only.sh)
+`bash scripts/reproduce_baselines/text_only.sh` will train and evaluate model automatically, 
+but you should correspondingly change `MODEL_DIR` and `DATA_DIR` for your setup
 
 ### Train and Evaluate Model #2 - CoarseVisual
-See [scripts/reproduce_baselines/text_and_img_feature.sh](scripts/reproduce_baselines/text_and_img_feature.sh)
+`bash scripts/reproduce_baselines/text_and_img_feature.sh` will train and evaluate model automatically, 
+but you should correspondingly change `MODEL_DIR` and `DATA_DIR` for your setup
 
 ### Train and Evaluate Model #3 - FineVisual
-See [scripts/reproduce_baselines/text_and_img_objects.sh](scripts/reproduce_baselines/text_and_img_objects.sh)
+`bash scripts/reproduce_baselines/text_and_img_objects.sh` will train and evaluate model automatically, 
+but you should correspondingly change `MODEL_DIR` and `DATA_DIR` for your setup
 
 ### Other Statistics
-1. get length/diversity/stopwords% statistics of system output: `stats.py`
+* get length/diversity/stopwords% statistics of system output: `stats.py`
+
+### Model benchmark
+| Model | BLEU-1 | BLEU-2 | BLEU-4 | Stopword% | Dis-1 | Dis-2 | Dis-3 | Dis-4 |
+| - | - | - | - | - | - | - | - | - |
+| 1-NV | 14.01 | 3.98 | 1.07 | 58.1% | 0.0091 | 0.0355 | 0.0682 | 0.1018 |
+| 2-CV | 14.58 | 4.35 | 1.14 | 54.2% | 0.0108 | 0.0448 | 0.0915 | 0.1465 |
+| 3-FV | 15.61 | 4.71 | 1.22 | 52.9% | 0.0118 | 0.0502 | 0.1082 | 0.1778 |
