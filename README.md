@@ -1,6 +1,5 @@
 # OpenViDial
-This repo contains introduction and downloading instructions of **OpenViDial** dataset, 
-which is  proposed in paper [《todo》](todo). 
+This repo contains introduction and downloading instructions of **OpenViDial** dataset.
 
 It also contains codes to reproduce three baselines. (See Section [Baselines](#baselines))
 
@@ -20,28 +19,30 @@ multi-module dialogue dataset. The dialogue
 turns and visual contexts are extracted
 from movies and TV series, where each dialogue
 turn is paired with the corresponding
-visual context in which it takes place. Open-
-ViDial contains a total number of 1.1 million
+visual context in which it takes place. OpenViDial contains a total number of 1.1 million
 dialogue turns, and thus 1.1 million visual contexts
 stored in images.
 
 
 ### Download Data
-1. Download `cat.sh`,`train/valid/test.dialogue.jsonl`,`train/valid/test.origin.txt` from the link : `https://drive.google.com/drive/folders/17TTRWbBC0eCNvUz3MLH7eb8fAndjmUA0?usp=sharing` and remove them as setp 5
-2. Download `test_images` from the link : `https://drive.google.com/drive/folders/1yffDmbe2JFxKC0YHNyfRG2SeluO5Cp7v?usp=sharing` and remove them as setp 5
-3. Download `valid_images` from the link : `https://drive.google.com/drive/folders/1ntNlveebdJDE_nIXmnR-APUAdJ-tlo2Y?usp=sharing` and remove them as setp 5
-4. Download `zip_train` from the link : `https://drive.google.com/drive/folders/1Aygv6rTWtvDv7-WLzzOSltHnht_dK80g?usp=sharing` and Run `cat.sh` which you download in the step 1, then remove them as setp 5
-5. Directory structure:  
-    **Note: every `train*` file or directory should have a 'valid' and a 'test' counterpart, we ignore them below for simplicity.**
-    ```
-    ├──origin_dir
-          └── train.origin.txt // each line has a raw sentence. This file has `num_sents` lines
-          └── train.dialogue.jsonl // each line is an episode of dialogue, which contains a list of sentence-id, sentence-id should range from 0 to `num_sents-1`
-          └── train_images // train images directory, contains `num_sents` images.
-                └── 0.jpg
-                └── 1.jpg
-                └── ...
-    ```
+origin data directory structure is shown below (**Note: every `train*` file or directory should have a 'valid' and a 'test' counterpart, we ignore them below for simplicity.**)
+```
+├──origin_dir
+      └── train.origin.txt // each line has a raw sentence. This file has `num_sents` lines
+      └── train.dialogue.jsonl // each line is an episode of dialogue, which contains a list of sentence-id, sentence-id should range from 0 to `num_sents-1`
+      └── train_images // train images directory, contains `num_sents` images.
+            └── 0.jpg
+            └── 1.jpg
+            └── ...
+```
+If you'd like to have a glance of real data while do not like to download large datasets, we provide a data sample [here](https://drive.google.com/drive/folders/17XjJ612wMolkrU-ESW5yv6MnbaclrzoM?usp=sharing)
+
+You can download full dataset in following steps:
+1. Download `cat.sh`,`train/valid/test.dialogue.jsonl`,`train/valid/test.origin.txt` from the link : `https://drive.google.com/drive/folders/17TTRWbBC0eCNvUz3MLH7eb8fAndjmUA0?usp=sharing` and move them to origin_dir
+1. Download `test_images` from the link : `https://drive.google.com/drive/folders/1yffDmbe2JFxKC0YHNyfRG2SeluO5Cp7v?usp=sharing` and move them to origin_dir
+1. Download `valid_images` from the link : `https://drive.google.com/drive/folders/1ntNlveebdJDE_nIXmnR-APUAdJ-tlo2Y?usp=sharing` and move them to origin_dir
+1. Download `zip_train` from the link : `https://drive.google.com/drive/folders/1Aygv6rTWtvDv7-WLzzOSltHnht_dK80g?usp=sharing` and Run `cat.sh` which you download in the step 1, then move them to origin_dir
+
 
 ## Baselines
 We proposed three baselines for this dataset:
