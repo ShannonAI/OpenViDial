@@ -2,9 +2,7 @@
 This repo contains downloading instructions for the **OpenViDial** dataset 
 in [《OpenViDial: A Large-Scale, Open-Domain Dialogue Dataset  with Visual Contexts》]() along with the code to reproduce results in the paper  (See Section [Baselines](#baselines)). 
 
-## Dataset
-
-### Introduction
+## Introduction
 When humans converse, what a speaker will
 say next significantly depends on what he sees. OpenViDial is a largescale
 multi-module dialogue dataset for this purpose. The dialogue
@@ -15,8 +13,7 @@ visual context in which it takes place. OpenViDial contains a total number of 1.
 dialogue turns, and thus 1.1 million visual contexts
 stored in images.
 
-We present two short conversations below
-where visual contexts are crucial.
+The following are  two short conversations where visual contexts are crucial.
 
 <div align="center">
   <img src="demo_data/dataset.png"/>
@@ -32,7 +29,11 @@ where visual contexts are crucial.
 |Average length of each episode |14|
 |Average length of each turn|7.6 |
 
-### Download Data and Visual Features
+
+## Dataset
+
+
+### Download Data 
 origin data directory structure is shown below (**Note: every `train*` file or directory should have a 'valid' and a 'test' counterpart.**)
 ```
 ├──origin_dir
