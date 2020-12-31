@@ -74,33 +74,45 @@ Faster R-CNN is an object detection framework. The detection sample and attentio
 * `pip install -r requirements.txt`
 
 ### Preprocess directory structure
+preprocessed_data_dir is a directory that contains all the preprocessed files (text, image feature mmap, offsets, etc.)
+generated from [origin_data_dir](#download-data) and we use them in training models. 
+The directory structure is shown below.
+
 **Note: every `train*` file or directory should have a 'valid' and a 'test' counterpart, we ignore them below for simplicity.**
 ```
 ├──preprocessed_data_dir
-      └── train.features.mmap  // numpy mmap array file of shape [num_sents, 1024], each row is a 1024-d Resnet-50 feature
-      └── train.objects.mmap  // numpy mmap array file of shape [num_sents, 20, 2048],  faster-rcnn object feature file, each row contain 20 objects feature, which is 2048-d 
-      └── train.objects_mask.mmap  // numpy mmap array file of shape [num_sents, 20],  faster-rcnn mask file, each row contain 20 objects mask, 1 for valid, 0 for mask.
-      └── train.offsets.npy  [todo](todo)(yuxian)
-      └── train.sent_num.npy [todo](todo)(yuxian)
+      └── train.features.mmap  // numpy mmap array file of shape [num_sents, 1000], each row is a 1024-d ResNet-50 feature
+      └── train.objects.mmap  // numpy mmap array file of shape [num_sents, 20, 2048],  faster-rcnn object feature file, each row contain 20 objects feature, which is 2048-d
+      └── train.objects_mask.mmap  // numpy mmap array file of shape [num_sents, 20],  faster-rcnn mask file, each row contain 20 objects mask, 1 for valid, 0 for mask
+      └── train.offsets.npy  // numpy array file of shape [num_episodes], each item is the offsets of one episode
+      └── train.sent_num.npy // numpy array file of shape [num_episodes], each item is the sentence number of one episode
 ```
 
 ### Preprocess text data
-We use Moses Tokenizer to tokenize texts:
+We use Moses Tokenizer to tokenize texts and generate offsets arrays:
 `bash ./scripts/preprocess_video_data.sh`
 and followed with byte-pair-encoding and fairseq-preprocess binarization:
 `bash ./scripts/preprocess_text_data.sh`
 
 ### Prepare pre-computed CNN features and Faster-RCNN features
-[todo](todo)(yuxian)
-##### Download Faster-RCNN features  
-You can download the preprocessed rcnn directory from [here](todo) and move it as `preprocessed_data_dir/objects.mmap`
-and `preprocessed_data_dir/objects_mask.mmap`
 
-##### Download CNN-pooling features
-You can download the preprocessed ResNet50 features (train/valid/test.features.mmap) from `https://drive.google.com/drive/folders/17TTRWbBC0eCNvUz3MLH7eb8fAndjmUA0?usp=sharing` and move it as `preprocessed_data_dir/features.mmap`
+##### Download CNN-pooling features(Used for Model #2 - CoarseVisual)
+You can download the preprocessed ResNet50 features (`*.features.mmap`) 
+from [here](https://drive.google.com/drive/folders/1ixH93LrlVtbKN81VCrSDK_9Y1FH4CiTD?usp=sharing)
+and move them under `preprocessed_data_dir/`
+
+##### Download Faster R-CNN features(Used for Model #3 - FineVisual)
+You can download the preprocessed Faster R-CNN objects features (`*objects.mmap` and `*objects_mask.mmap`) 
+from [here](https://drive.google.com/drive/folders/1_pCmwXcUZv35E9p3sqPeQcdKgGHVZEr7?usp=sharing)
+then move them under `preprocessed_data_dir/`
+
+Since file `train.objects.mmap` is too large(100G+), 
+we have splitted it to many small pieces like `train.objects.mmap.split*`, 
+and you need another step to merge all those files together: `cat * train.objects.mmap.split* >train.objects.mmap`
 
 ##### (Optional) Extract features on your own
-See [video_dialogue_model/extract_features/extract_features.md](video_dialogue_model/extract_features/extract_features.md)
+If you want to extract some feature on your own, or you'd like to know details of extracting visual features, 
+see [video_dialogue_model/extract_features/extract_features.md](video_dialogue_model/extract_features/extract_features.md)
 
 ### Train and Evaluate Model #1 - NoVisual
 `bash scripts/reproduce_baselines/text_only.sh` will train and evaluate model automatically, 
