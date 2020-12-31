@@ -87,6 +87,8 @@ We use Moses Tokenizer to tokenize texts and generate offsets arrays:
 and followed with byte-pair-encoding and fairseq-preprocess binarization:
 `bash ./scripts/preprocess_text_data.sh`
 
+**Note: You need to change `DATA_DIR, ORIGIN_DIR, OUTPUT_DIR` to your own path**
+
 ### Prepare pre-computed CNN features and Faster-RCNN features
 
 ##### Download CNN-pooling features(Used for Model #2 - CoarseVisual)

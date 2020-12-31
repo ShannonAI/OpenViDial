@@ -1,7 +1,4 @@
-# Preprocess text data in preprocessed_data/src.txt
 
-
-#DATA_DIR="/data/yuxian/datasets/video/preprocessed_data"
 DATA_DIR="/userhome/yuxian/data/video/preprocessed_data"
 
 # learn bpe
@@ -9,7 +6,7 @@ num_operations=30000
 train_file=$DATA_DIR/train.src.txt
 codes_file=$DATA_DIR/codes.${num_operations}.bpe
 subword-nmt learn-bpe -s ${num_operations} < ${train_file} > ${codes_file}
-#
+
 # apply bpe
 for split in "train" "valid" "test"; do
     f="${DATA_DIR}/${split}.src.txt"
