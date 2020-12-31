@@ -1,22 +1,13 @@
 # OpenViDial
 This repo contains downloading instructions for the **OpenViDial** dataset 
-in [《OpenViDial: A Large-Scale, Open-Domain Dialogue Dataset  with Visual Contexts》]()
-
-along with the code to reproduce results in the paper  (See Section [Baselines](#baselines)). 
+in [《OpenViDial: A Large-Scale, Open-Domain Dialogue Dataset  with Visual Contexts》]() along with the code to reproduce results in the paper  (See Section [Baselines](#baselines)). 
 
 ## Dataset
 
 ### Introduction
 When humans converse, what a speaker will
-say next significantly depends on what he sees.
-Unfortunately, existing dialogue models generate
-dialogue utterances only based on preceding
-textual contexts, and visual contexts
-are rarely considered. This is due to a lack
-of a large-scale multi-module dialogue dataset
-with utterances paired with visual contexts.
-In this paper, we release OpenViDial, a largescale
-multi-module dialogue dataset. The dialogue
+say next significantly depends on what he sees. OpenViDial is a largescale
+multi-module dialogue dataset for this purpose. The dialogue
 turns and visual contexts are extracted
 from movies and TV series, where each dialogue
 turn is paired with the corresponding
