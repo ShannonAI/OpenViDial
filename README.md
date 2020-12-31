@@ -88,15 +88,14 @@ and followed with byte-pair-encoding and fairseq-preprocess binarization
 ### Donwload pre-computed CNN features and Faster-RCNN features
 todo(shuhe)
 
-### Text Only Model
+### Train and Evaluate Text Only Model
 See [scripts/reproduce_baselines/text_only.sh](scripts/reproduce_baselines/text_only.sh)
 
-### Coarse Visual Model
+### Train and Evaluate Coarse Visual Model
 See [scripts/reproduce_baselines/text_and_img_feature.sh](scripts/reproduce_baselines/text_and_img_feature.sh)
 
-### Fine Visual Model
+### Train and Evaluate Fine Visual Model
 See [scripts/reproduce_baselines/text_and_img_objects.sh](scripts/reproduce_baselines/text_and_img_objects.sh)
 
-## Generation and Evaluation
+### Other Statistics
 1. length/diversity/stopwords% stats `stats.py`
-1. (beta) MMI generation `scripts/mmi/mmi_generate.sh`
