@@ -53,10 +53,10 @@ We proposed three baselines for this dataset:
   <img src="demo_data/model3.png"/>
 </div>
 
-Faster R-CNN is an object detection framework, the detection sample and Attention over objects during text decoding is shown below.
+Faster R-CNN is an object detection framework. The detection sample and attention over objects during text decoding is shown below.
 
 <div align="center">
-  <img src="demo_data/model3.png"/>
+  <img src="demo_data/attention_over_objects.png"/>
 </div>
 
 We provide scripts to reproduce three baselines for this dataset.
