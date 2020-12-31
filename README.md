@@ -30,10 +30,8 @@ The following are  two short conversations where visual contexts are crucial.
 |Average length of each turn|7.6 |
 
 
-## Dataset
+## Download the Dataset
 
-
-### Download Data 
 origin data directory structure is shown below (**Note: every `train*` file or directory should have a 'valid' and a 'test' counterpart.**)
 ```
 ├──origin_dir
@@ -53,8 +51,8 @@ You can download the full dataset as follows:
 1. Download `zip_train` from the link : `https://drive.google.com/drive/folders/1Aygv6rTWtvDv7-WLzzOSltHnht_dK80g?usp=sharing` and Run `cat.sh` which you download in the step 1, then move them to origin_dir
 
 
-## Baselines
-We proposed three baselines for this dataset:
+## Models
+We proposed three models for this dataset:
 * Model #1 - NoVisual: use only dialog texts without visual information
 
 <div align="center">
