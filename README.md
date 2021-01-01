@@ -1,6 +1,6 @@
 # OpenViDial
 This repo contains downloading instructions for the **OpenViDial** dataset 
-in [《OpenViDial: A Large-Scale, Open-Domain Dialogue Dataset  with Visual Contexts》]() along with the code to reproduce results in the paper  (See Section [Baselines](#baselines)). 
+in [《OpenViDial: A Large-Scale, Open-Domain Dialogue Dataset  with Visual Contexts》](https://arxiv.org/pdf/2012.15015.pdf) along with the code to reproduce results in the paper  (See Section [Baselines](#baselines)). 
 
 ## Introduction
 When humans converse, what a speaker will
