@@ -32,27 +32,31 @@ The following are  two short conversations where visual contexts are crucial.
 
 ## Download the Dataset
 
-origin data directory structure is shown below (**Note: every `train*` file or directory should have a 'valid' and a 'test' counterpart.**)
+The main folder `origin_dir` contains training/valid/test sets, each of which is made up by the following files:
 ```
 ├──origin_dir
-      └── train.origin.txt // each line has a raw sentence. This file has `num_sents` lines
-      └── train.dialogue.jsonl // each line is an episode of dialogue, which contains a list of sentence-id, sentence-id should range from 0 to `num_sents-1`
-      └── train_images // train images directory, contains `num_sents` images.
+      └── train.dialogue.jsonl // each line is an episode of dialogue, which a list of IDs.    
+      └── train.origin.txt // each line corresponds to a dialogue text utterence, with the ID being its line number (staring with 0).
+      └── train_images // containing images (visual contexts) in which the text utterence take place, with ID being the image filename (0,1,2, etc)
             └── 0.jpg
             └── 1.jpg
             └── ...
+      └── valid.* (i.e., valid.dialogue.jsonl, valid.origin.txt, valid_images)
+      └── test.*  (i.e., test.dialogue.jsonl, test.origin.txt, test_images)
 ```
+
 If you'd like to take a glance at the a sample of the dataset instead of downloading the full dataset, we provide a data sample [here](https://drive.google.com/drive/folders/17XjJ612wMolkrU-ESW5yv6MnbaclrzoM?usp=sharing)
 
-You can download the full dataset as follows:
-1. Download `cat.sh`,`train/valid/test.dialogue.jsonl`,`train/valid/test.origin.txt` from the link : `https://drive.google.com/drive/folders/17TTRWbBC0eCNvUz3MLH7eb8fAndjmUA0?usp=sharing` and move them to origin_dir
-1. Download `test_images` from the link : `https://drive.google.com/drive/folders/1yffDmbe2JFxKC0YHNyfRG2SeluO5Cp7v?usp=sharing` and move them to origin_dir
-1. Download `valid_images` from the link : `https://drive.google.com/drive/folders/1ntNlveebdJDE_nIXmnR-APUAdJ-tlo2Y?usp=sharing` and move them to origin_dir
-1. Download `zip_train` from the link : `https://drive.google.com/drive/folders/1Aygv6rTWtvDv7-WLzzOSltHnht_dK80g?usp=sharing` and Run `cat.sh` which you download in the step 1, then move them to origin_dir
+Data download:
+1. Download `[train|valid|test].origin.txt` and `[train|valid|test].dialogue.jsonl` [here](https://drive.google.com/drive/folders/17TTRWbBC0eCNvUz3MLH7eb8fAndjmUA0?usp=sharing) 
+2. Download `test_images` (~ 20G)  [here](https://drive.google.com/drive/folders/1yffDmbe2JFxKC0YHNyfRG2SeluO5Cp7v?usp=sharing) 
+3. Download `valid_images` (~ 20G) [here](https://drive.google.com/drive/folders/1ntNlveebdJDE_nIXmnR-APUAdJ-tlo2Y?usp=sharing) 
+4. Download train_images: Since train_images is too big (~ 170G), we split it to 11 zip (each of which is 17G).  Download seperate files `zip_train`  [here](https://drive.google.com/drive/folders/1Aygv6rTWtvDv7-WLzzOSltHnht_dK80g?usp=sharing). The download and run `cat.sh` [here](https://drive.google.com/drive/folders/17TTRWbBC0eCNvUz3MLH7eb8fAndjmUA0?usp=sharing) to include all files in the same directory.  
+5. Move all files to `origin_dir`. 
 
 
 ## Models
-We proposed three models for this dataset:
+We proposed three models for this dataset. Please refer to the paper for details:
 * **Model #1 - NoVisual**: use only dialog texts without visual information
 
 <div align="center">
