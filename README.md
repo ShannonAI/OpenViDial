@@ -51,7 +51,7 @@ Data download:
 1. Download `[train|valid|test].origin.txt` and `[train|valid|test].dialogue.jsonl` [here](https://drive.google.com/drive/folders/17TTRWbBC0eCNvUz3MLH7eb8fAndjmUA0?usp=sharing) 
 2. Download `test_images` (~ 20G)  [here](https://drive.google.com/drive/folders/1yffDmbe2JFxKC0YHNyfRG2SeluO5Cp7v?usp=sharing) 
 3. Download `valid_images` (~ 20G) [here](https://drive.google.com/drive/folders/1ntNlveebdJDE_nIXmnR-APUAdJ-tlo2Y?usp=sharing) 
-4. Download train_images: Since train_images is too big (~ 170G), we split it to 11 zip (each of which is 17G).  Download seperate files `zip_train`  [here](https://drive.google.com/drive/folders/1Aygv6rTWtvDv7-WLzzOSltHnht_dK80g?usp=sharing). The download and run `cat.sh` [here](https://drive.google.com/drive/folders/17TTRWbBC0eCNvUz3MLH7eb8fAndjmUA0?usp=sharing) to include all files in the same directory.  
+4. Download train_images: Since train_images is too big (~ 170G), we split it to 11 zip files (each of which is 17G).  Download seperate files `zip_train`  [here](https://drive.google.com/drive/folders/1Aygv6rTWtvDv7-WLzzOSltHnht_dK80g?usp=sharing). Then download and run `cat.sh` [here](https://drive.google.com/drive/folders/17TTRWbBC0eCNvUz3MLH7eb8fAndjmUA0?usp=sharing) to include all files in the same directory.  
 5. Move all files to `origin_dir`. 
 
 
