@@ -1,25 +1,10 @@
 # 1. extract data from origin jsonl file
 
-# normal
-#ORIGIN_DIR="/userhome/yuxian/data/video/origin_data"
-#MMI_DIR="/userhome/yuxian/data/video/preprocessed_mmi_data"
-#ORIGIN_DIR="sample_data/origin_data"
-#MMI_DIR="sample_data/preprocessed_mmi_data"
-#mkdir -p $MMI_DIR
-#for split in "valid" "test" "train"; do
-#  python preprocess_nmt_data.py \
-#    --origin-dir $ORIGIN_DIR \
-#    --output-dir $MMI_DIR \
-#    --split $split
-#done
-
-
-# tmp todo remove this? or use this to bpe. 这样的话就不需要反复bpe了？
-ORIGIN_DIR="/data/yuxian/datasets/new-video/preprocessed_data"
-MMI_DIR="/data/yuxian/datasets/new-video/preprocessed_mmi_data"
+ORIGIN_DIR="/userhome/yuxian/data/video/origin_data"
+MMI_DIR="/userhome/yuxian/data/video/preprocessed_mmi_data"
 mkdir -p $MMI_DIR
 for split in "valid" "test" "train"; do
-  python preprocess_nmt_data_tmp.py \
+  python ./preprocess/preprocess_nmt_data.py \
     --origin-dir $ORIGIN_DIR \
     --output-dir $MMI_DIR \
     --split $split
