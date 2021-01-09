@@ -16,7 +16,7 @@ from tqdm import tqdm
 MAX_OBJECTS, RCNN_FEATURE_DIM = 100, 2048
 TRUNCATE_OBJECTS = 20
 
-output_dir = "/userhome/yuxian/data/video/preprocessed_data"
+output_dir = "./preprocessed_data"
 for split, total_num in zip(["train", "valid", "test"], [865694, 109109, 111346]):
     objects = np.memmap(object_file(output_dir, split), dtype=np.float32, mode='r',
                         shape=(total_num, MAX_OBJECTS, RCNN_FEATURE_DIM))

@@ -38,7 +38,7 @@ fairseq-train \
 # generate system predictions to OUTPUT
 MODEL_PATH="${MODEL_DIR}/checkpoint_best.th"
 OUTPUT="${MODEL_DIR}/gen.out"
-python generate.py \
+python ./train/generate.py \
   --user-dir video_dialogue_model \
   --task video-dialogue \
   --img-type $TYPE \

@@ -141,7 +141,7 @@ Remember to change `MODEL_DIR` and `DATA_DIR` for your setup
 Remember to change `MODEL_DIR` and `DATA_DIR` for your setup
 
 ### Other Statistics
-* get length/diversity/stopwords% statistics of system output: `stats.py`
+* get length/diversity/stopwords% statistics of system output: `train/stats.py`
 
 ### Model benchmark
 | Model | BLEU-1 | BLEU-2 | BLEU-4 | Stopword% | Dis-1 | Dis-2 | Dis-3 | Dis-4 |

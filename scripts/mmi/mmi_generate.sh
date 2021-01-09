@@ -3,9 +3,6 @@ export CUDA_VISIBLE_DEVICES=3
 # 1. normal generation with nbest list
 
 DATA_DIR="/data/yuxian/datasets/new-video/preprocessed_data"
-#MODEL_DIR="/data/yuxian/datasets/new-video/models/text"
-#MODEL_DIR="/data/yuxian/datasets/new-video/models/feature_lr3e-4"
-#TYPE="features"
 MODEL_DIR="/data/yuxian/datasets/new-video/models/object_lr2e-4"
 TYPE="objects"
 MODEL_PATH="${MODEL_DIR}/checkpoint_best.pt"
@@ -15,7 +12,7 @@ SUBSET="valid"
 NBEST_FILE="${MODEL_DIR}/${SUBSET}_gen.out.${NBEST}best"
 
 
-python generate.py \
+python ./train/generate.py \
   --user-dir video_dialogue_model \
   --task video-dialogue \
   --img-type $TYPE \
