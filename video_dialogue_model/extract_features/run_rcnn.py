@@ -35,7 +35,7 @@ from maskrcnn_benchmark.layers import nms
 from maskrcnn_benchmark.modeling.detector import build_detection_model
 from maskrcnn_benchmark.structures.image_list import to_image_list
 from maskrcnn_benchmark.utils.model_serialization import load_state_dict
-from rcnn.dataset import get_dataloader
+from video_dialogue_model.extract_features.rcnn_dataset import get_dataloader
 
 
 class FeatureExtractor:
