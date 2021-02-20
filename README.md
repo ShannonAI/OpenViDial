@@ -122,7 +122,7 @@ then move them under `preprocessed_data_dir/`
 
 Since file `train.objects.mmap` is too large(100G+), 
 we splitted it to many small pieces like `train.objects.mmap.split*`, 
-and you need another step to merge all those files together: `cat * train.objects.mmap.split* >train.objects.mmap`
+and you need another step to merge all those files together: `cat train.objects.mmap.split* >train.objects.mmap`
 
 ##### (Optional) Extract features on your own
 If you want to extract some feature on your own, or you'd like to know details of extracting visual features, 
