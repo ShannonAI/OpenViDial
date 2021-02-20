@@ -7,7 +7,7 @@
 @file: stats
 @time: 2020/12/26 14:37
 @desc: This file includes helper metrics we used in our paper to
-       compute statistics of model outputs
+       compute statistics of model outputs.
 
 """
 from sacremoses import MosesTokenizer
@@ -110,6 +110,8 @@ def compute_stats(tgt_file):
 
 
 if __name__ == '__main__':
+    # These files contains system prediction of fairseq, each line is a sentence.
+    # You can get it by `grep ^D gen.out | cut -f3- > sys.txt`, where `gen.out` is output file of fairseq-generate
     for file in [
         "/data/yuxian/datasets/new-video/models/text/sys.txt",
         "/data/yuxian/datasets/new-video/models/feature_lr3e-4/sys.txt",
