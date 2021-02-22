@@ -10,7 +10,6 @@
 
 """
 
-from functools import partial
 from typing import List
 
 import cv2
@@ -22,6 +21,8 @@ from torch.utils.data import Dataset, DataLoader
 
 
 class ImageDataset(Dataset):
+    MAX_SIZE = 1333
+    MIN_SIZE = 800
     def __init__(self, file_names: List[str]):
         self.file_names = file_names
 
@@ -31,7 +32,7 @@ class ImageDataset(Dataset):
     def __getitem__(self, item):
         image_path = self.file_names[item]
         im, im_scale, im_info = self._image_transform(image_path)
-        return im, im_scale, im_info
+        return im, im_scale, im_info, image_path
         # img_tensor.append(im)
         # im_scales.append(im_scale)
         # im_infos.append(im_info)
@@ -78,10 +79,17 @@ def get_dataloader(file_names, batch_size, workers):
         num_workers=workers,
         batch_size=batch_size,
         shuffle=False,
-        collate_fn=partial(to_image_list, size_divisible=32),
+        collate_fn=yuxian_collate,
         pin_memory=True,
     )
 
 
 def yuxian_collate(batch: List[List[torch.Tensor]]):
-    return to_image_list(batch), [x[1] for x in batch], [x[2] for x in batch]
+    # print("="* 10)
+    # print([x[0] for x in batch])
+    return (
+        to_image_list([x[0] for x in batch], size_divisible=32),
+        [x[1] for x in batch],
+        [x[2] for x in batch],
+        [x[3] for x in batch]
+    )
