@@ -1,3 +1,6 @@
+# Note that fairseq may use all gpus on your machine and the actual batch-size is times by n_gpus.
+# If you use multiple gpus, batch_size should be devided by number of gpus.
+
 # hyper-params
 LR=2e-4
 DROPOUT=0.3
@@ -39,7 +42,7 @@ fairseq-train \
 
 
 # generate system predictions to OUTPUT
-MODEL_PATH="${MODEL_DIR}/checkpoint_best.th"
+MODEL_PATH="${MODEL_DIR}/checkpoint_best.pt"
 OUTPUT="${MODEL_DIR}/gen.out"
 python ./train/generate.py \
   --user-dir video_dialogue_model \

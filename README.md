@@ -130,22 +130,26 @@ see [video_dialogue_model/extract_features/extract_features.md](video_dialogue_m
 
 ### Train and Evaluate Model #1 - NoVisual
 `bash scripts/reproduce_baselines/text_only.sh` will train and evaluate NoVisual, 
-Remember to change `MODEL_DIR` and `DATA_DIR` for your setup
+Remember to change `MODEL_DIR` and `DATA_DIR` for your setup. 
+**Note:** `fairseq` may use all gpus on your machine and the actual batch size is times by number of gpus.
+Therefore, if you use multiple gpus, batch size should be devided by number of gpus.
 
 ### Train and Evaluate Model #2 - CoarseVisual
 `bash scripts/reproduce_baselines/text_and_img_feature.sh` will train and evaluate CoarseVisual.
-Remember to change `MODEL_DIR` and `DATA_DIR` for your setup
+Remember to change `MODEL_DIR` and `DATA_DIR` for your setup. Please make sure you use one single gpu to reproduce our results.
 
 ### Train and Evaluate Model #3 - FineVisual
 `bash scripts/reproduce_baselines/text_and_img_objects.sh` will train and evaluate FineVisual, 
-Remember to change `MODEL_DIR` and `DATA_DIR` for your setup
+Remember to change `MODEL_DIR` and `DATA_DIR` for your setup. Please make sure you use one single gpu to reproduce our results.
 
 ### Other Statistics
 * get length/diversity/stopwords% statistics of system output: `train/stats.py`
 
 ### Model benchmark
-| Model | BLEU-1 | BLEU-2 | BLEU-4 | Stopword% | Dis-1 | Dis-2 | Dis-3 | Dis-4 |
+| Model | BLEU-1 | BLEU-2 | BLEU-4 | Stopword% | Dis-1<sup>[1](#dis-footnote)</sup> | Dis-2 | Dis-3 | Dis-4 |
 | - | - | - | - | - | - | - | - | - |
 | 1-NV | 14.01 | 3.98 | 1.07 | 58.1% | 0.0091 | 0.0355 | 0.0682 | 0.1018 |
 | 2-CV | 14.58 | 4.35 | 1.14 | 54.2% | 0.0108 | 0.0448 | 0.0915 | 0.1465 |
 | 3-FV | 15.61 | 4.71 | 1.22 | 52.9% | 0.0118 | 0.0502 | 0.1082 | 0.1778 |
+
+<a name="dis-footnote">1</a>: we times `Dis-x` by 10 for the ease of demonstration.
