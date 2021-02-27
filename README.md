@@ -31,6 +31,10 @@ The following are  two short conversations where visual contexts are crucial.
 
 
 ## Download the Dataset
+**\*\*\*\*\* New February 27th, 2021: New split of Dataset \*\*\*\*\***
+
+We upload a new version(1.1) of our dataset, which adopt the train/valid/test split of dataset consistent with 
+our paper. The download urls have been updated too.
 
 The main folder `origin_dir` contains training/valid/test sets, each of which is made up by the following files:
 ```
@@ -48,10 +52,10 @@ The main folder `origin_dir` contains training/valid/test sets, each of which is
 If you'd like to take a glance at the a sample of the dataset instead of downloading the full dataset, we provide a data sample [here](https://drive.google.com/drive/folders/17XjJ612wMolkrU-ESW5yv6MnbaclrzoM?usp=sharing)
 
 Data download:
-1. Download `[train|valid|test].origin.txt` and `[train|valid|test].dialogue.jsonl` [here](https://drive.google.com/drive/folders/17TTRWbBC0eCNvUz3MLH7eb8fAndjmUA0?usp=sharing) 
-2. Download `test_images` (~ 20G)  [here](https://drive.google.com/file/d/1a9z8Fxuj-O_i_IOLn8R7Y2fiumXGeRR5/view?usp=sharing) 
-3. Download `valid_images` (~ 20G) [here](https://drive.google.com/file/d/1p05N5hewXlA2Fd-_PIlgCGTEYVoo7smr/view?usp=sharing) 
-4. Download train_images: Since train_images is too big (~ 170G), we split it to 11 zip files (each of which is 17G).  Download seperate files `zip_train`  [here](https://drive.google.com/drive/folders/1Aygv6rTWtvDv7-WLzzOSltHnht_dK80g?usp=sharing). Then download and run `cat.sh` [here](https://drive.google.com/drive/folders/17TTRWbBC0eCNvUz3MLH7eb8fAndjmUA0?usp=sharing) to include all files in the same directory.  
+1. Download `[train|valid|test].origin.txt` and `[train|valid|test].dialogue.jsonl` [here](https://drive.google.com/drive/folders/15qznjUWaIJ-TzT4YTdcgR9-fMumOfjFx?usp=sharing) 
+2. Download `test_images` (~ 20G)  [here](https://drive.google.com/file/d/1DgZXlGi_x37nQrJYK4tSLXEvVShBKaZY/view?usp=sharing) 
+3. Download `valid_images` (~ 20G) [here](https://drive.google.com/file/d/1J6YMq3Zwqdhi93IZFHi1JoS9xvcZcPfM/view?usp=sharing) 
+4. Download train_images: Since train_images is too big (~ 170G), we split it to 12 zip files.  Download seperate files `zip_train`  [here](https://drive.google.com/drive/folders/1Aygv6rTWtvDv7-WLzzOSltHnht_dK80g?usp=sharing). Then download and run `cat.sh` [here](https://drive.google.com/file/d/1GUBBAdm8-1O3a5ZJ5JmkwSBFiFoEp09k/view?usp=sharing) to include all files in the same directory.  
 5. Move all files to `origin_dir`. 
 
 
@@ -112,12 +116,12 @@ and followed with byte-pair-encoding and fairseq-preprocess binarization:
 
 ##### Download CNN-pooling features(Used for Model #2 - CoarseVisual)
 Preprocessed ResNet50 features (`*.features.mmap`) 
-[(~4G) can be downloaded from here](https://drive.google.com/drive/folders/1ixH93LrlVtbKN81VCrSDK_9Y1FH4CiTD?usp=sharing)
+[(~4G) can be downloaded from here](https://drive.google.com/drive/folders/1wHY-hQqMHqXaqLLBar7HFGvjTPVOCECc?usp=sharing)
 and move them under `preprocessed_data_dir/`
 
 ##### Download Faster R-CNN features(Used for Model #3 - FineVisual)
 Preprocessed Faster R-CNN objects features (`*objects.mmap`, `*objects_mask.mmap`) 
-[(~160G) can be downloaded from here](https://drive.google.com/drive/folders/1_pCmwXcUZv35E9p3sqPeQcdKgGHVZEr7?usp=sharing)
+[(~160G) can be downloaded from here](https://drive.google.com/drive/folders/1p49gHmlQ-3X2hsX18gr7aoqFsJCwcMNt?usp=sharing)
 then move them under `preprocessed_data_dir/`
 
 Since file `train.objects.mmap` is too large(100G+), 
