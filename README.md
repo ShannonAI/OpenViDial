@@ -34,7 +34,8 @@ The following are  two short conversations where visual contexts are crucial.
 **\*\*\*\*\* New February 27th, 2021: New split of Dataset \*\*\*\*\***
 
 We upload a new version(1.1) of our dataset, which adopt the train/valid/test split of dataset consistent with 
-our paper. The download urls have been updated too.
+our paper(1M, 50k, 50K), while the older split is (900K, 100k, 100k). The download urls are updated too.
+
 
 The main folder `origin_dir` contains training/valid/test sets, each of which is made up by the following files:
 ```
