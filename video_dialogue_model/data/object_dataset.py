@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 class ObjectDataset(Dataset):
-    MAX_OBJ = 100  # max-obj in mmap file
+    MAX_OBJ = 20  # max-obj in mmap file
     """Load Object dataset"""
     def __init__(self, data_dir, split="train", max_obj=20):
         self.data_dir = data_dir
