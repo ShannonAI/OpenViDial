@@ -387,7 +387,20 @@ def _main(args, output_file):
             ),
             file=output_file,
         )
+        print(
+            "Generate {} with beam={}: {}".format(
+                args.gen_subset, args.beam, scorer.result_string(2)
+            ),
+            file=output_file,
+        )
 
+        print(
+            "Generate {} with beam={}: {}".format(
+                args.gen_subset, args.beam, scorer.result_string(1)
+            ),
+            file=output_file,
+        )
+        
     return scorer
 
 
