@@ -31,6 +31,12 @@ The following are  two short conversations where visual contexts are crucial.
 
 
 ## Download the Dataset
+
+**\*\*\*\*\* New March 12th, 2021: New cnn/rcnn feature on test/valid dataset \*\*\*\*\***
+
+We fixed the bug of cnn/rcnn features on valid/test dataset and re-run the experiments on the new data.
+Evaluation metrics will be updated soon.
+
 **\*\*\*\*\* New February 27th, 2021: New split of Dataset \*\*\*\*\***
 
 We upload a new version(1.1) of our dataset, which adopt the train/valid/test split of dataset consistent with 
