@@ -35,14 +35,7 @@ The following are  two short conversations where visual contexts are crucial.
 **\*\*\*\*\* New March 12th, 2021: New cnn/rcnn feature on test/valid dataset \*\*\*\*\***
 
 We fixed the bug of cnn/rcnn features on valid/test dataset and re-run the experiments on the new data.
-Evaluation metrics will be updated soon.
-
-**\*\*\*\*\* New February 27th, 2021: New split of Dataset \*\*\*\*\***
-
-We upload a new version(1.1) of our dataset, which adopt the train/valid/test split of dataset consistent with 
-our paper(1M, 50k, 50K), while the older split is (900K, 100k, 100k). The download urls are updated too. 
-**Note: cnn/rcnn features of valid/test dataset are incorrect now, and we will update it soon.** 
-
+Evaluation metrics are also updated.
 
 The main folder `origin_dir` contains training/valid/test sets, each of which is made up by the following files:
 ```
@@ -158,10 +151,8 @@ Remember to change `MODEL_DIR` and `DATA_DIR` for your setup. Please make sure y
 * get length/diversity/stopwords% statistics of system output: `train/stats.py`
 
 ### Model benchmark
-| Model | BLEU-1 | BLEU-2 | BLEU-4 | Stopword% | Dis-1<sup>[1](#dis-footnote)</sup> | Dis-2 | Dis-3 | Dis-4 |
-| - | - | - | - | - | - | - | - | - |
-| 1-NV | 14.01 | 3.98 | 1.07 | 58.1% | 0.0091 | 0.0355 | 0.0682 | 0.1018 |
-| 2-CV | 14.58 | 4.35 | 1.14 | 54.2% | 0.0108 | 0.0448 | 0.0915 | 0.1465 |
-| 3-FV | 15.61 | 4.71 | 1.22 | 52.9% | 0.0118 | 0.0502 | 0.1082 | 0.1778 |
-
-<a name="dis-footnote">1</a>: we times `Dis-x` by 10 for the ease of demonstration.
+| Model | BLEU-1 | BLEU-2 | BLEU-4 | Dis-1 | Dis-2 | Dis-3 | Dis-4 |
+| - | - | - | - | - | - | - | - |
+| 1-NV | 14.06 | 3.80 | 0.95 | 0.0006 | 0.0019 | 0.0314 | 0.0043 |
+| 2-CV | 14.70 | 4.38 | 1.14 | 0.0023 | 0.0090 | 0.0177 | 0.0272 |
+| 3-FV | 14.85 | 4.61 | 1.19 | 0.0026 | 0.0112 | 0.0246 | 0.0406 |
