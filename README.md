@@ -153,6 +153,6 @@ Remember to change `MODEL_DIR` and `DATA_DIR` for your setup. Please make sure y
 ### Model benchmark
 | Model | BLEU-1 | BLEU-2 | BLEU-4 | Dis-1 | Dis-2 | Dis-3 | Dis-4 |
 | - | - | - | - | - | - | - | - |
-| 1-NV | 14.06 | 3.80 | 0.95 | 0.0006 | 0.0019 | 0.0314 | 0.0043 |
+| 1-NV | 14.06 | 3.80 | 0.95 | 0.0006 | 0.0019 | 0.0031 | 0.0043 |
 | 2-CV | 14.70 | 4.38 | 1.14 | 0.0023 | 0.0090 | 0.0177 | 0.0272 |
 | 3-FV | 14.85 | 4.61 | 1.19 | 0.0026 | 0.0112 | 0.0246 | 0.0406 |
