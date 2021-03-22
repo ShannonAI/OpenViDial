@@ -32,6 +32,11 @@ The following are  two short conversations where visual contexts are crucial.
 
 ## Download the Dataset
 
+**\*\*\*\*\* New March 12th, 2021: New cnn/rcnn feature on test/valid dataset \*\*\*\*\***
+
+We fixed the bug of cnn/rcnn features on valid/test dataset and re-run the experiments on the new data.
+Evaluation metrics are also updated.
+
 The main folder `origin_dir` contains training/valid/test sets, each of which is made up by the following files:
 ```
 ├──origin_dir
@@ -48,10 +53,10 @@ The main folder `origin_dir` contains training/valid/test sets, each of which is
 If you'd like to take a glance at the a sample of the dataset instead of downloading the full dataset, we provide a data sample [here](https://drive.google.com/drive/folders/17XjJ612wMolkrU-ESW5yv6MnbaclrzoM?usp=sharing)
 
 Data download:
-1. Download `[train|valid|test].origin.txt` and `[train|valid|test].dialogue.jsonl` [here](https://drive.google.com/drive/folders/17TTRWbBC0eCNvUz3MLH7eb8fAndjmUA0?usp=sharing) 
-2. Download `test_images` (~ 20G)  [here](https://drive.google.com/drive/folders/1yffDmbe2JFxKC0YHNyfRG2SeluO5Cp7v?usp=sharing) 
-3. Download `valid_images` (~ 20G) [here](https://drive.google.com/drive/folders/1ntNlveebdJDE_nIXmnR-APUAdJ-tlo2Y?usp=sharing) 
-4. Download train_images: Since train_images is too big (~ 170G), we split it to 11 zip files (each of which is 17G).  Download seperate files `zip_train`  [here](https://drive.google.com/drive/folders/1Aygv6rTWtvDv7-WLzzOSltHnht_dK80g?usp=sharing). Then download and run `cat.sh` [here](https://drive.google.com/drive/folders/17TTRWbBC0eCNvUz3MLH7eb8fAndjmUA0?usp=sharing) to include all files in the same directory.  
+1. Download `[train|valid|test].origin.txt` and `[train|valid|test].dialogue.jsonl` [here](https://drive.google.com/drive/folders/15qznjUWaIJ-TzT4YTdcgR9-fMumOfjFx?usp=sharing) 
+2. Download `test_images` (~ 20G)  [here](https://drive.google.com/file/d/1DgZXlGi_x37nQrJYK4tSLXEvVShBKaZY/view?usp=sharing) 
+3. Download `valid_images` (~ 20G) [here](https://drive.google.com/file/d/1J6YMq3Zwqdhi93IZFHi1JoS9xvcZcPfM/view?usp=sharing) 
+4. Download train_images: Since train_images is too big (~ 170G), we split it to 12 zip files.  Download seperate files `zip_train`  [here](https://drive.google.com/drive/folders/1Aygv6rTWtvDv7-WLzzOSltHnht_dK80g?usp=sharing). Then download and run `cat.sh` [here](https://drive.google.com/file/d/1GUBBAdm8-1O3a5ZJ5JmkwSBFiFoEp09k/view?usp=sharing) to include all files in the same directory.  
 5. Move all files to `origin_dir`. 
 
 
@@ -112,17 +117,17 @@ and followed with byte-pair-encoding and fairseq-preprocess binarization:
 
 ##### Download CNN-pooling features(Used for Model #2 - CoarseVisual)
 Preprocessed ResNet50 features (`*.features.mmap`) 
-[(~4G) can be downloaded from here](https://drive.google.com/drive/folders/1ixH93LrlVtbKN81VCrSDK_9Y1FH4CiTD?usp=sharing)
+[(~4G) can be downloaded from here](https://drive.google.com/drive/folders/1wHY-hQqMHqXaqLLBar7HFGvjTPVOCECc?usp=sharing)
 and move them under `preprocessed_data_dir/`
 
 ##### Download Faster R-CNN features(Used for Model #3 - FineVisual)
 Preprocessed Faster R-CNN objects features (`*objects.mmap`, `*objects_mask.mmap`) 
-[(~160G) can be downloaded from here](https://drive.google.com/drive/folders/1_pCmwXcUZv35E9p3sqPeQcdKgGHVZEr7?usp=sharing)
+[(~160G) can be downloaded from here](https://drive.google.com/drive/folders/1p49gHmlQ-3X2hsX18gr7aoqFsJCwcMNt?usp=sharing)
 then move them under `preprocessed_data_dir/`
 
 Since file `train.objects.mmap` is too large(100G+), 
 we splitted it to many small pieces like `train.objects.mmap.split*`, 
-and you need another step to merge all those files together: `cat * train.objects.mmap.split* >train.objects.mmap`
+and you need another step to merge all those files together: `cat train.objects.mmap.split* >train.objects.mmap`
 
 ##### (Optional) Extract features on your own
 If you want to extract some feature on your own, or you'd like to know details of extracting visual features, 
@@ -130,22 +135,24 @@ see [video_dialogue_model/extract_features/extract_features.md](video_dialogue_m
 
 ### Train and Evaluate Model #1 - NoVisual
 `bash scripts/reproduce_baselines/text_only.sh` will train and evaluate NoVisual, 
-Remember to change `MODEL_DIR` and `DATA_DIR` for your setup
+Remember to change `MODEL_DIR` and `DATA_DIR` for your setup. 
+**Note:** `fairseq` may use all gpus on your machine and the actual batch size is times by number of gpus.
+Therefore, if you use multiple gpus, batch size should be devided by number of gpus.
 
 ### Train and Evaluate Model #2 - CoarseVisual
 `bash scripts/reproduce_baselines/text_and_img_feature.sh` will train and evaluate CoarseVisual.
-Remember to change `MODEL_DIR` and `DATA_DIR` for your setup
+Remember to change `MODEL_DIR` and `DATA_DIR` for your setup. Please make sure you use one single gpu to reproduce our results.
 
 ### Train and Evaluate Model #3 - FineVisual
 `bash scripts/reproduce_baselines/text_and_img_objects.sh` will train and evaluate FineVisual, 
-Remember to change `MODEL_DIR` and `DATA_DIR` for your setup
+Remember to change `MODEL_DIR` and `DATA_DIR` for your setup. Please make sure you use one single gpu to reproduce our results.
 
 ### Other Statistics
-* get length/diversity/stopwords% statistics of system output: `stats.py`
+* get length/diversity/stopwords% statistics of system output: `train/stats.py`
 
 ### Model benchmark
-| Model | BLEU-1 | BLEU-2 | BLEU-4 | Stopword% | Dis-1 | Dis-2 | Dis-3 | Dis-4 |
-| - | - | - | - | - | - | - | - | - |
-| 1-NV | 14.01 | 3.98 | 1.07 | 58.1% | 0.0091 | 0.0355 | 0.0682 | 0.1018 |
-| 2-CV | 14.58 | 4.35 | 1.14 | 54.2% | 0.0108 | 0.0448 | 0.0915 | 0.1465 |
-| 3-FV | 15.61 | 4.71 | 1.22 | 52.9% | 0.0118 | 0.0502 | 0.1082 | 0.1778 |
+| Model | BLEU-1 | BLEU-2 | BLEU-4 | Dis-1 | Dis-2 | Dis-3 | Dis-4 |
+| - | - | - | - | - | - | - | - |
+| 1-NV | 14.06 | 3.80 | 0.95 | 0.0006 | 0.0019 | 0.0031 | 0.0043 |
+| 2-CV | 14.70 | 4.38 | 1.14 | 0.0023 | 0.0090 | 0.0177 | 0.0272 |
+| 3-FV | 14.85 | 4.61 | 1.19 | 0.0026 | 0.0112 | 0.0246 | 0.0406 |

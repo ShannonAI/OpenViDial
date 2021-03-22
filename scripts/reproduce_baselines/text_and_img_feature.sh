@@ -1,3 +1,6 @@
+# Note that fairseq may use all gpus on your machine and the actual batch-size is times by n_gpus.
+# If you use multiple gpus, batch_size should be devided by number of gpus.
+
 # hyper-params
 LR=3e-4
 DROPOUT=0.3
@@ -5,7 +8,7 @@ LAYER=3
 WARMUP=6000
 
 # directory to save models
-MODEL_DIR="/data/yuxian/train_logs/video/text_and_image_feature/layer${LAYER}_lr${LR}_bsz128_drop${DROPOUT}_warmup${WARMUP}"
+MODEL_DIR="/data/yuxian/train_logs/video/reproduce_text_and_image_feature/layer${LAYER}_lr${LR}_bsz128_drop${DROPOUT}_warmup${WARMUP}"
 # data directory
 DATA_DIR="/data/yuxian/datasets/new-video/preprocessed_data"
 TYPE="features"
@@ -35,9 +38,9 @@ fairseq-train \
   --use-img \
 
 # generate system predictions to OUTPUT
-MODEL_PATH="${MODEL_DIR}/checkpoint_best.th"
+MODEL_PATH="${MODEL_DIR}/checkpoint_best.pt"
 OUTPUT="${MODEL_DIR}/gen.out"
-python generate.py \
+python ./train/generate.py \
   --user-dir video_dialogue_model \
   --task video-dialogue \
   --img-type $TYPE \
