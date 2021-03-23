@@ -130,7 +130,7 @@ we splitted it to many small pieces like `train.objects.mmap.split*`,
 and you need another step to merge all those files together: `cat train.objects.mmap.split* >train.objects.mmap`  
 
 ##### Checkout
-Each of files has a hash value by command `md5sum fileName`. You can get it from [here](https://drive.google.com/file/d/1COXpOvw6pCjTXppb86JmSDj7iGx6BOnO/view?usp=sharing) and we suggest you check each file's hash value before training.
+Each of files has a hash value by command `md5sum fileName`. You can get it from [here](https://drive.google.com/file/d/1wda5QVLLzHKa3366JixBKnE8RAVUcdR1/view?usp=sharing) and we suggest you check each file's hash value before training.
 
 ##### (Optional) Extract features on your own
 If you want to extract some feature on your own, or you'd like to know details of extracting visual features, 
