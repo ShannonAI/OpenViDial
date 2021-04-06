@@ -3,15 +3,14 @@ from fairseq import metrics
 from fairseq.criterions import FairseqCriterion, register_criterion
 
 
-@register_criterion("mse-loss")
-class MSELoss(FairseqCriterion):
+@register_criterion("base-loss")
+class Loss(FairseqCriterion):
     """
-    Implementation for the MSELoss.
+    Implementation for the Loss.
     """
 
     def __init__(self, task):
         super().__init__(task)
-        self.loss = torch.nn.MSELoss(reduction='mean')
         
     def forward(self, model, sample, reduce=True):
         """Compute the loss for the given sample.
@@ -22,9 +21,10 @@ class MSELoss(FairseqCriterion):
         3) logging outputs to display while training
         """
         sample_size = sample['nsentences']
-        loss = model(**sample["net_input"])
-        target = torch.ones(sample['net_input']['src_tokens'].shape[0]).cuda()
-        loss = self.loss(loss, target)
+        loss, label = model(**sample["net_input"])
+        loss = -(label*torch.log(loss) + (1-label)*torch.log(1-loss))
+        #print(loss)
+        loss = loss.sum(dim=-1)/sample_size
 
         logging_output = {
             "loss": loss,
@@ -40,8 +40,9 @@ class MSELoss(FairseqCriterion):
         loss_sum = sum(log.get("loss", 0) for log in logging_outputs)
         sample_size = sum(log.get("sample_size", 0) for log in logging_outputs)
 
+        
         metrics.log_scalar(
-            "loss", loss_sum / sample_size, sample_size, round=3
+            "loss", loss_sum, sample_size, round=3
         )
 
     @staticmethod

@@ -1,12 +1,13 @@
 import os
 import numpy as np
 
+import random
 import torch
 from fairseq.data import Dictionary, data_utils
-from video_dialogue_model.data.utils import text_bin_file
+from mmi_fairseq.feature.utils import text_bin_file
 from fairseq.tasks import register_task, FairseqTask
-from video_dialogue_model.data.feature_dataset import FeatureDataset
-from video_dialogue_model.data.mmi_text_and_feature_dataset import MMITextImageDataset
+from mmi_fairseq.feature.feature_dataset import FeatureDataset
+from mmi_fairseq.feature.mmi_text_and_feature_dataset import MMITextImageDataset
 #from video_dialogue_model.data.text_and_object_dataset import TextObjectDataset
 #from video_dialogue_model.data.object_dataset import ObjectDataset
 
@@ -36,7 +37,7 @@ class MMIVideoDialogueTask(FairseqTask):
 
     def load_feature_dataset(self, split, **kwargs):
         features_dataset = FeatureDataset(self.args.data_dir, split)
-        span_idxs = self.get_span_info(sent_num=features_dataset.sent_num)
+        span_idxs = self.get_span_info(sent_num=features_dataset.sent_num, split=split)
 
         text_file = text_bin_file(self.args.data_dir, split)  # os.path.join(self.args.data_dir, split)
         text_dataset = data_utils.load_indexed_dataset(text_file, self.vocab_dict)
@@ -67,32 +68,26 @@ class MMIVideoDialogueTask(FairseqTask):
         return self.load_feature_dataset(split, **kwargs)
 
     @staticmethod
-    def get_span_info(sent_num: np.array) -> np.array:
+    def get_span_info(sent_num: np.array, split) -> np.array:
         """
         compute each src/tgt span of dataset.
         For example, if we got [[0,1,2], [3,4]] as source texts,
         then return [[0, 0, 2], [1, 3, 4]]
         """
+        max_num = sum(int(sent_num[group_idx]) for group_idx in range(sent_num.shape[0]))
         span_idxs = []
         start_idx = 0
-        #span_value = 10
         for group_idx in range(sent_num.shape[0]):
             num = int(sent_num[group_idx])
             end_ = start_idx + 1
             while (end_ <= start_idx+num-1):
-                span_idxs.append((group_idx, end_-1, end_))
+                span_idxs.append((1, end_-1, end_))
+                if (split != 'test'):
+                    neg_idx = random.randint(0, max_num-1)
+                    while (neg_idx == end_):
+                        neg_idx = random.randint(0, max_num-1)
+                    span_idxs.append((0, end_-1, neg_idx))
                 end_ += 1
-            '''
-            if (num == 1):
-                start_idx += num
-                continue
-            start_ = start_idx
-            end_ = min(start_idx+num-1, start_idx+20-1)
-            while (end_ <= start_idx+num-1):
-                span_idxs.append((group_idx, start_, end_))
-                start_ = end_
-                end_ += span_value
-            '''
             start_idx += num
         return np.array(span_idxs)
 

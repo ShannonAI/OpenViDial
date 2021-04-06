@@ -13,6 +13,7 @@
 from typing import Optional
 
 import torch
+import torch.nn as nn
 from fairseq.models import (
     register_model,
     register_model_architecture,
@@ -26,7 +27,6 @@ from fairseq.models.transformer import (
 
 DEFAULT_MAX_SOURCE_POSITIONS = 1024
 DEFAULT_MAX_TARGET_POSITIONS = 1024
-
 
 @register_model("mmi-img-transformer")
 class MMIImageTransformerModel(TransformerModel):
@@ -48,6 +48,9 @@ class MMIImageTransformerModel(TransformerModel):
 
     def __init__(self, args, encoder, decoder):
         super().__init__(args, encoder, decoder)
+        self.final = nn.Linear(in_features=args.encoder_embed_dim+args.img_dim, out_features=1, bias=True)
+        #self.final = nn.Linear(in_features=args.encoder_embed_dim, out_features=args.img_dim, bias=True)
+        #self.cos = nn.CosineSimilarity(dim=2)
 
     @staticmethod
     def add_args(parser):
@@ -56,7 +59,7 @@ class MMIImageTransformerModel(TransformerModel):
         parser.add_argument('--img-dim', type=int, metavar='N', default=1000,
                             help='image feature dimension')
 
-    def forward(self, src_tokens, src_mask, src_imgs, src_lengths, prev_output_tokens, **kwargs):
+    def forward(self, src_tokens, src_label, src_imgs, src_lengths, prev_output_tokens, **kwargs):
         """
         Run the forward pass for an encoder-decoder model.
 
@@ -69,9 +72,9 @@ class MMIImageTransformerModel(TransformerModel):
 
         Args:
             src_tokens (LongTensor): tokens in the source language of shape
-                `(batch * sent_num, src_len)`
+                `(batch, src_len)`
             src_imgs (FloatTensor): images features in the source sentences
-                `(batch * img_num, dim)`
+                `(batch, dim)`
             src_lengths (LongTensor): source sentence lengths of shape `(batch)`
             prev_output_tokens (LongTensor): previous decoder outputs of shape
                 `(batch, tgt_len)`, for teacher forcing
@@ -80,10 +83,23 @@ class MMIImageTransformerModel(TransformerModel):
             output_: image_feature * text_feature, shape `(batch, sent_len)`
         """
         encoder_out = self.encoder(src_tokens, src_lengths=src_lengths, **kwargs)
+        '''
+        x = self.final(encoder_out.encoder_out).transpose(0, 1) # T * B * C -> B * T * C
+        src_imgs = torch.unsqueeze(src_imgs, dim=1)
+        src_imgs = src_imgs.expand(x.shape[0], x.shape[1], x.shape[2])
+        #print(src_label)
+        #print(self.cos(x, src_imgs))
+        #output_ = torch.nn.functional.sigmoid(torch.matmul(x, src_imgs).squeeze(dim=-1)) * (1-encoder_out.encoder_padding_mask.float()) # B * T
+        output_ = torch.nn.functional.sigmoid(self.cos(x, src_imgs)) * (1-encoder_out.encoder_padding_mask.float())  # B * T
+        #print(output_.sum(dim=-1)/src_lengths)
+        #print(output_)
+        return output_.sum(dim=-1)/src_lengths, src_label
+        '''
         x = encoder_out.encoder_out.transpose(0, 1) # T * B * C -> B * T * C
-        src_imgs = torch.unsqueeze(src_imgs, dim=-1)
-        output_ = torch.nn.functional.sigmoid(torch.matmul(x, src_imgs).squeeze(dim=-1)) * src_mask # B * T
-        return output_.sum(dim=-1)
+        src_imgs = torch.unsqueeze(src_imgs, dim=1)
+        src_imgs = src_imgs.expand(x.shape[0], x.shape[1], src_imgs.shape[2])
+        feature = torch.nn.functional.sigmoid(self.final(torch.cat((x, src_imgs), dim=-1)).squeeze(dim=-1)) * (1-encoder_out.encoder_padding_mask.float()) # B * T        
+        return feature.sum(dim=-1)/src_lengths, src_label
 
     @classmethod
     def build_encoder(cls, args, src_dict, embed_tokens):

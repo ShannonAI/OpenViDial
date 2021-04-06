@@ -13,7 +13,7 @@
 import numpy as np
 import torch
 from fairseq.data.fairseq_dataset import FairseqDataset
-from video_dialogue_model.data.feature_dataset import FeatureDataset
+from mmi_fairseq.feature.feature_dataset import FeatureDataset
 from fairseq.data import data_utils
 
 
@@ -32,14 +32,15 @@ class MMITextImageDataset(FairseqDataset):
         source_texts = [self.text_dataset[idx] for idx in range(start_idx+1, end_idx+1)]  # n * sent_len
         target = self.text_dataset[end_idx] # will not be computed
         '''
-        group_idx, start_idx, end_idx = self.span_idxs[index].tolist()
-        source_imgs = [self.img_dataset[start_idx]]  # dim
+        is_true, start_idx, end_idx = self.span_idxs[index].tolist()
+        source_imgs = self.img_dataset[start_idx]  # dim
         source_texts = self.text_dataset[end_idx]  # sent_len
         target = self.text_dataset[end_idx] # will not be computed
 
         return {
             'id': index,
-            'source_imgs': torch.FloatTensor(source_imgs),
+            'is_true': is_true,
+            'source_imgs': source_imgs,
             'source_texts': source_texts,
             'target': torch.LongTensor(target)
         }
@@ -56,9 +57,8 @@ class MMITextImageDataset(FairseqDataset):
         for i in range(start_idx+1, end_idx+1):
             sum_tokens += len(self.text_dataset[i])
         '''
-        group_idx, start_idx, end_idx = self.span_idxs[index].tolist()
-        sum_tokens = len(self.text_dataset[end_idx])
-        #sum_tokens += end_idx - start_idx + 1
+        is_true, start_idx, end_idx = self.span_idxs[index].tolist()
+        sum_tokens = len(self.text_dataset[start_idx])
         return sum_tokens
 
     def size(self, index):
@@ -85,6 +85,7 @@ class MMITextImageDataset(FairseqDataset):
         source_imgs = []
         source_texts = []
         source_lengths = []
+        source_label = []
         targets = []
 
         target_ntokens = 0
@@ -97,6 +98,7 @@ class MMITextImageDataset(FairseqDataset):
             source_imgs.append(sample['source_imgs'])
             source_texts.append(torch.LongTensor(sample['source_texts']))
             source_lengths.append(len(sample['source_texts']))
+            source_label.append(sample['is_true'])
 
             targets.append(sample['target'])
             target_ntokens += len(sample["target"])
@@ -104,20 +106,16 @@ class MMITextImageDataset(FairseqDataset):
 
         indices = torch.tensor(indices, dtype=torch.long)
 
-        pad_imgs = None
-        for imgs in source_imgs:
-            if (pad_imgs is None):
-                pad_imgs = imgs
-            else:
-                pad_imgs = torch.cat((pad_imgs, imgs))
+        source_label_tensor = torch.tensor(source_label, dtype=torch.float)
+
+        source_lengths_tensor = torch.tensor(source_lengths, dtype=torch.long)
+
+        image_tensor = torch.tensor(source_imgs, dtype=torch.float)
 
         source_texts_batch = data_utils.collate_tokens(source_texts,
                                                        pad_idx=self.vocab_dict.pad(),
                                                        eos_idx=self.vocab_dict.eos(),
                                                        move_eos_to_beginning=False)
-        pad_text_batch = (source_texts_batch != self.vocab_dict.pad()).float()
-        eos_text_batch = (source_texts_batch != self.vocab_dict.eos()).float()
-        pad_text_batch = pad_text_batch * eos_text_batch
 
         target_batch = data_utils.collate_tokens(targets,
                                                  pad_idx=self.vocab_dict.pad(),
@@ -132,9 +130,9 @@ class MMITextImageDataset(FairseqDataset):
             'id': indices,
             'net_input': {
                 'src_tokens': source_texts_batch,
-                'src_mask': pad_text_batch,
-                'src_imgs': pad_imgs,
-                'src_lengths': source_lengths,
+                'src_label': source_label_tensor,
+                'src_imgs': image_tensor,
+                'src_lengths': source_lengths_tensor,
                 'prev_output_tokens': prev_target_batch,
             },
             'target': target_batch,
