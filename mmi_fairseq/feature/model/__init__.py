@@ -1,0 +1,2 @@
+from .image_mmi_transformer import MMIImageTransformerModel
+from .object_mmi_transformer import MMIObjectTransformerModel

@@ -4,12 +4,12 @@ import numpy as np
 import random
 import torch
 from fairseq.data import Dictionary, data_utils
-from mmi_fairseq.feature.utils import text_bin_file
+from mmi_fairseq.feature.data.utils import text_bin_file
 from fairseq.tasks import register_task, FairseqTask
-from mmi_fairseq.feature.feature_dataset import FeatureDataset
-from mmi_fairseq.feature.mmi_text_and_feature_dataset import MMITextImageDataset
-#from video_dialogue_model.data.text_and_object_dataset import TextObjectDataset
-#from video_dialogue_model.data.object_dataset import ObjectDataset
+from mmi_fairseq.feature.data.feature_dataset import FeatureDataset
+from mmi_fairseq.feature.data.mmi_text_and_feature_dataset import MMITextImageDataset
+from mmi_fairseq.feature.data.object_dataset import ObjectDataset
+from mmi_fairseq.feature.data.mmi_text_and_object_dataset import MMITextObjectDataset
 
 
 @register_task('mmi-video-dialogue')
@@ -47,25 +47,24 @@ class MMIVideoDialogueTask(FairseqTask):
                                                 vocab_dict=self.vocab_dict,
                                                 span_idxs=span_idxs,
                                                 shuffle=True if split == "train" else False)
-    '''
+
     def load_text_object_dataset(self, split, **kwargs):
         objects_dataset = ObjectDataset(self.args.data_dir, split, max_obj=self.args.max_obj)
-        span_idxs = self.item2span_idxs(sent_num=objects_dataset.sent_num,
-                                        max_src_sent=self.args.max_src_sent)
+        span_idxs = self.get_span_info(sent_num=objects_dataset.sent_num, split=split)
 
         text_file = text_bin_file(self.args.data_dir, split)  # os.path.join(self.args.data_dir, split)
         text_dataset = data_utils.load_indexed_dataset(text_file, self.vocab_dict)
 
-        self.datasets[split] = TextObjectDataset(text_dataset=text_dataset,
+        self.datasets[split] = MMITextObjectDataset(text_dataset=text_dataset,
                                                  image_dataset=objects_dataset,
                                                  vocab_dict=self.vocab_dict,
                                                  span_idxs=span_idxs,
                                                  shuffle=True if split == "train" else False)
-    '''
+    
     def load_dataset(self, split, **kwargs):
         if self.args.img_type == "features":
             return self.load_feature_dataset(split, **kwargs)
-        return self.load_feature_dataset(split, **kwargs)
+        return self.load_text_object_dataset(split, **kwargs)
 
     @staticmethod
     def get_span_info(sent_num: np.array, split) -> np.array:
@@ -74,7 +73,11 @@ class MMIVideoDialogueTask(FairseqTask):
         For example, if we got [[0,1,2], [3,4]] as source texts,
         then return [[0, 0, 2], [1, 3, 4]]
         """
+        '''
+        测试时还需要改一下，现在没有结合反向文本
+        '''
         max_num = sum(int(sent_num[group_idx]) for group_idx in range(sent_num.shape[0]))
+        print(max_num)
         span_idxs = []
         start_idx = 0
         for group_idx in range(sent_num.shape[0]):

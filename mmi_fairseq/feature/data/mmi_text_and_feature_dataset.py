@@ -13,7 +13,7 @@
 import numpy as np
 import torch
 from fairseq.data.fairseq_dataset import FairseqDataset
-from mmi_fairseq.feature.feature_dataset import FeatureDataset
+from mmi_fairseq.feature.data.feature_dataset import FeatureDataset
 from fairseq.data import data_utils
 
 
@@ -81,6 +81,7 @@ class MMITextImageDataset(FairseqDataset):
         """Merge a list of samples to form a mini-batch."""
         if len(samples) == 0:
             return {}
+
         indices = []
         source_imgs = []
         source_texts = []
@@ -89,7 +90,6 @@ class MMITextImageDataset(FairseqDataset):
         targets = []
 
         target_ntokens = 0
-        num_sentences = 0
 
         for sample in samples:
             index = sample['id']

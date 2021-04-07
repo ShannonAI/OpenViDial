@@ -21,6 +21,7 @@ class Loss(FairseqCriterion):
         3) logging outputs to display while training
         """
         sample_size = sample['nsentences']
+        #print(sample["net_input"])
         loss, label = model(**sample["net_input"])
         loss = -(label*torch.log(loss) + (1-label)*torch.log(1-loss))
         #print(loss)

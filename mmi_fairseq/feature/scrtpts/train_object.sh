@@ -11,7 +11,7 @@ WARMUP=6000
 MODEL_DIR="/home/wangshuhe/shuhework/OpenViDial/mmi_test"
 # data directory
 DATA_DIR="/data/wangshuhe/test_mmi"
-TYPE="features"
+TYPE="objects"
 
 CUDA_VISIBLE_DEVICES=3 fairseq-train \
   --save-dir $MODEL_DIR \
@@ -19,13 +19,13 @@ CUDA_VISIBLE_DEVICES=3 fairseq-train \
   --task mmi-video-dialogue \
   --img-type $TYPE \
   --data-dir $DATA_DIR \
-  --arch baseline-mmi-img-transformer \
+  --arch baseline-mmi-obj-transformer \
   --encoder-layers $LAYER \
   --encoder-embed-dim 512 \
   --dropout $DROPOUT \
   --optimizer adam \
   --max-tokens 100000 \
-  --batch-size 5 \
+  --batch-size 150 \
   --adam-betas "(0.9,0.999)" \
   --reset-optimizer \
   --criterion base-loss \
