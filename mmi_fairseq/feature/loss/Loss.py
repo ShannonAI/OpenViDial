@@ -23,7 +23,7 @@ class Loss(FairseqCriterion):
         sample_size = sample['nsentences']
         #print(sample["net_input"])
         loss, label = model(**sample["net_input"])
-        loss = -(label*torch.log(loss) + (1-label)*torch.log(1-loss))
+        loss = -(label*loss + (1-label)*torch.log(1-torch.exp(loss)))
         #print(loss)
         loss = loss.sum(dim=-1)/sample_size
 

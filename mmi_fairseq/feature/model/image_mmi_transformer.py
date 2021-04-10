@@ -98,7 +98,8 @@ class MMIImageTransformerModel(TransformerModel):
         x = encoder_out.encoder_out.transpose(0, 1) # T * B * C -> B * T * C
         src_imgs = torch.unsqueeze(src_imgs, dim=1)
         src_imgs = src_imgs.expand(x.shape[0], x.shape[1], src_imgs.shape[2])
-        feature = torch.nn.functional.sigmoid(self.final(torch.cat((x, src_imgs), dim=-1)).squeeze(dim=-1)) * (1-encoder_out.encoder_padding_mask.float()) # B * T        
+        feature = torch.nn.functional.sigmoid(self.final(torch.cat((x, src_imgs), dim=-1)).squeeze(dim=-1)) * (1-encoder_out.encoder_padding_mask.float()) # B * T
+        feature = torch.log(feature)    
         return feature.sum(dim=-1)/src_lengths, src_label
 
     @classmethod
