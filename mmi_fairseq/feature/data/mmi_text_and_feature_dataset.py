@@ -116,6 +116,8 @@ class MMITextImageDataset(FairseqDataset):
                                                        pad_idx=self.vocab_dict.pad(),
                                                        eos_idx=self.vocab_dict.eos(),
                                                        move_eos_to_beginning=False)
+        
+        mask_ones = torch.ones((source_texts_batch.shape[0], source_texts_batch.shape[1]), dtype=torch.float) # B * T
 
         target_batch = data_utils.collate_tokens(targets,
                                                  pad_idx=self.vocab_dict.pad(),
@@ -130,6 +132,7 @@ class MMITextImageDataset(FairseqDataset):
             'id': indices,
             'net_input': {
                 'src_tokens': source_texts_batch,
+                'mask_ones': mask_ones,
                 'src_label': source_label_tensor,
                 'src_imgs': image_tensor,
                 'src_lengths': source_lengths_tensor,
