@@ -150,13 +150,18 @@ def _main(args, output_file):
             models,
             sample
         )
-        print(loss)
         output.append(loss)
-    return output
+    
+    with open(args.score_target_file, "w") as f:
+        for loss in output:
+            for i in range(loss.shap[0]):
+                f.write(str(loss[i].float()))
+        f.close()
 
 def cli_main():
     parser = options.get_generation_parser()
     parser.add_argument("--print-attention", action="store_true", help="print attention matrix as jsonline")
+    parser.add_argument("--score-target-file", type=str, help="target file to store score")
     args = options.parse_args_and_arch(parser)
     main(args)
 

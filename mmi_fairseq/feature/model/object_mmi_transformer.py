@@ -59,7 +59,7 @@ class MMIObjectTransformerModel(TransformerModel):
         parser.add_argument('--img-dim', type=int, metavar='N', default=2048,
                             help='image feature dimension')
 
-    def forward(self, src_tokens, src_label, objs, objs_mask, src_lengths, prev_output_tokens, **kwargs):
+    def forward(self, src_tokens, mask_ones, src_label, objs, objs_mask, src_lengths, prev_output_tokens, **kwargs):
         """
         Run the forward pass for an encoder-decoder model.
 
@@ -104,7 +104,9 @@ class MMIObjectTransformerModel(TransformerModel):
         src_imgs = objs.sum(dim=1)/objs_mask.sum(dim=-1).unsqueeze(dim=-1) # B * feature_dim
         src_imgs = torch.unsqueeze(src_imgs, dim=1)
         src_imgs = src_imgs.expand(x.shape[0], x.shape[1], src_imgs.shape[2])
-        feature = torch.nn.functional.sigmoid(self.final(torch.cat((x, src_imgs), dim=-1)).squeeze(dim=-1)) * (1-encoder_out.encoder_padding_mask.float()) # B * T        
+        feature = torch.nn.functional.sigmoid(self.final(torch.cat((x, src_imgs), dim=-1)).squeeze(dim=-1)) * (1-encoder_out.encoder_padding_mask.float()) # B * T
+        feature = feature + encoder_out.encoder_padding_mask.float()*mask_ones # B * T
+        feature = torch.log(feature)    
         return feature.sum(dim=-1)/src_lengths, src_label
 
     @classmethod
