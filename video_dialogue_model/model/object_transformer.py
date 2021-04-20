@@ -51,7 +51,7 @@ class ObjTransformerModel(TransformerModel):
     def __init__(self, args, encoder, decoder):
         super().__init__(args, encoder, decoder)
 
-    def forward(self, src_tokens, objs, objs_mask, src_lengths, prev_output_tokens, **kwargs):
+    def forward(self, src_tokens, src_imgs, objs, objs_mask, src_lengths, prev_output_tokens, **kwargs):
         """
         Run the forward pass for an encoder-decoder model.
 
@@ -78,7 +78,7 @@ class ObjTransformerModel(TransformerModel):
                 - the decoder's output of shape `(batch, tgt_len, vocab)`
                 - a dictionary with any model-specific outputs
         """
-        encoder_out = self.encoder(src_tokens, objs, objs_mask, src_lengths=src_lengths, **kwargs)
+        encoder_out = self.encoder(src_tokens, src_imgs=src_imgs, objs=objs, objs_mask=objs_mask, src_lengths=src_lengths, **kwargs)
         decoder_out = self.decoder(prev_output_tokens, encoder_out=encoder_out, **kwargs)
         return decoder_out
 
@@ -112,9 +112,10 @@ class ObjTransformerEncoder(TransformerEncoder):
 
         self.token_type_embedding = nn.Embedding(2, args.encoder_embed_dim)  # image/token
         self.image_proj = nn.Linear(2048, args.encoder_embed_dim)
+        self.fuse_img_token = nn.Linear(embed_tokens.embedding_dim + 1000, embed_tokens.embedding_dim)
 
     def forward_embedding(
-        self, src_tokens, objs, token_embedding: Optional[torch.Tensor] = None
+        self, src_tokens, objs, src_imgs=None, token_embedding: Optional[torch.Tensor] = None
     ):
         bsz, token_length = src_tokens.size()
         _, sent_num, max_obj, dim = objs.size()
@@ -123,6 +124,13 @@ class ObjTransformerEncoder(TransformerEncoder):
         if token_embedding is None:
             token_embedding = self.embed_tokens(src_tokens)
         x = embed = self.embed_scale * token_embedding
+
+        token_img_idxs = torch.cumsum((src_tokens == self.dictionary.eos_index).long(), dim=1).unsqueeze(-1).expand([-1, -1, 1000])
+        # [B, T, C']  f[b][t][c] = src_imgs[b][token_img_idxs[b][t][c]][c]
+        token_img_features = torch.gather(src_imgs, 1, token_img_idxs)
+        # [B, T, C]
+        x = self.fuse_img_token(torch.cat([x, token_img_features], dim=-1))
+
         if self.embed_positions is not None:
             x = embed + self.embed_positions(src_tokens)
         x += self.token_type_embedding(torch.ones_like(src_tokens))
@@ -151,6 +159,7 @@ class ObjTransformerEncoder(TransformerEncoder):
     def forward(
         self,
         src_tokens,
+        src_imgs,
         objs,
         objs_mask,
         src_lengths,
@@ -186,7 +195,7 @@ class ObjTransformerEncoder(TransformerEncoder):
                   Only populated if *return_all_hiddens* is True.
         """
         bsz = src_tokens.size(0)
-        x, encoder_embedding = self.forward_embedding(src_tokens, objs, token_embeddings)
+        x, encoder_embedding = self.forward_embedding(src_tokens, objs, src_imgs, token_embeddings)
 
         # B x T x C -> T x B x C
         x = x.transpose(0, 1)

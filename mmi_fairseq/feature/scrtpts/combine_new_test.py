@@ -19,12 +19,12 @@ def main():
     print(f"reading src-file from {args.src_dir} and {args.nbest_file}")
     with open(os.path.join(args.src_dir, "test.src.txt"), "r") as f:
         for line in f:
-            src_file.append(f)
+            src_file.append(line)
         f.close()
     
     with open(args.nbest_file, "r") as f:
         for line in f:
-            nbest_file.append(f)
+            nbest_file.append(line)
         f.close()
     
     start_ = 0
@@ -34,11 +34,12 @@ def main():
         i = 1
         while (i <= start_+num-1):
             src_file[i] = nbest_file[n_cnt]
+            i += 1
             n_cnt += 1
     
     print(f"writing to {args.target_dir}")
     with open(args.target_dir, "w") as f:
-        for line in nbest_file:
+        for line in src_file:
             f.write(line)
         f.close()
 

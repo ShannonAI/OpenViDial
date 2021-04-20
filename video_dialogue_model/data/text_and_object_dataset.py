@@ -14,6 +14,7 @@ import numpy as np
 import torch
 from fairseq.data.fairseq_dataset import FairseqDataset
 from video_dialogue_model.data.object_dataset import ObjectDataset
+from video_dialogue_model.data.feature_dataset import FeatureDataset
 from fairseq.data import data_utils
 
 
@@ -21,8 +22,9 @@ class TextObjectDataset(FairseqDataset):
     """
     A combine of text dataset and object dataset
     """
-    def __init__(self, image_dataset: ObjectDataset, text_dataset, vocab_dict, span_idxs, shuffle=False):
+    def __init__(self, image_dataset: ObjectDataset, feature_dataset: FeatureDataset, text_dataset, vocab_dict, span_idxs, shuffle=False):
         self.img_dataset = image_dataset
+        self.feature_dataset = feature_dataset
         self.text_dataset = text_dataset
         self.vocab_dict = vocab_dict
         self.span_idxs = span_idxs
@@ -39,10 +41,13 @@ class TextObjectDataset(FairseqDataset):
         source_texts = np.concatenate([self.text_dataset[idx] for idx in offsets[:-1]])  # L
         target = self.text_dataset[offsets[-1]]
 
+        source_imgs = np.stack([self.feature_dataset[idx] for idx in offsets])  # n * dim
+
         return {
             'id': index,
             'objects': torch.FloatTensor(objects),
             'objects_mask': torch.FloatTensor(objects_mask),
+            'source_imgs': torch.FloatTensor(source_imgs),
             'source_texts': torch.LongTensor(source_texts),
             'target': torch.LongTensor(target)
         }
@@ -87,6 +92,7 @@ class TextObjectDataset(FairseqDataset):
         indices = []
         source_objects = []
         objects_mask = []
+        source_imgs = []
         source_texts = []
         source_lengths = []
         targets = []
@@ -96,6 +102,8 @@ class TextObjectDataset(FairseqDataset):
         for sample in samples:
             index = sample['id']
             indices.append(index)
+
+            source_imgs.append(sample['source_imgs'])
             sent_num, max_object, rcnn_dim = sample["objects"].shape
             source_objects.append(sample['objects'])  # [sent_num, max_obj, dim]
             objects_mask.append(sample['objects_mask'])  # [sent_num, max_obj]
@@ -110,6 +118,10 @@ class TextObjectDataset(FairseqDataset):
         indices = torch.tensor(indices, dtype=torch.long)
 
         max_sent = max(x.size(0) for x in source_objects)
+        pad_imgs = torch.zeros([num_sentences, max_sent, self.feature_dataset.dim], dtype=torch.float)
+        for idx, imgs in enumerate(source_imgs):
+            pad_imgs[idx][: imgs.size(0)] = imgs
+
         pad_objects = torch.zeros([num_sentences, max_sent, self.max_obj, self.img_dataset.dim], dtype=torch.float)
         pad_mask_objs = torch.zeros([num_sentences, max_sent, self.max_obj], dtype=torch.bool)
         for idx, objs in enumerate(source_objects):
@@ -135,6 +147,7 @@ class TextObjectDataset(FairseqDataset):
             'id': indices,
             'net_input': {
                 'src_tokens': source_texts_batch,
+                'src_imgs': pad_imgs,
                 'objs': pad_objects,
                 'objs_mask': pad_mask_objs,
                 'src_lengths': source_lengths,

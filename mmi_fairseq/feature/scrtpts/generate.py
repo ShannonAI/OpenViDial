@@ -20,6 +20,7 @@ import numpy as np
 import torch
 from fairseq import checkpoint_utils, options, tasks, utils
 from fairseq.logging import progress_bar
+import math
 
 
 def main(args):
@@ -154,8 +155,8 @@ def _main(args, output_file):
     
     with open(args.score_target_file, "w") as f:
         for loss in output:
-            for i in range(loss.shap[0]):
-                f.write(str(loss[i].float()))
+            for i in range(loss.shape[0]):
+                f.write(str(float(loss[i])/math.log(2))+'\n')
         f.close()
 
 def cli_main():

@@ -24,8 +24,7 @@ CUDA_VISIBLE_DEVICES=3 fairseq-train \
   --encoder-embed-dim 512 \
   --dropout $DROPOUT \
   --optimizer adam \
-  --max-tokens 100000 \
-  --batch-size 150 \
+  --batch-size 256 \
   --adam-betas "(0.9,0.999)" \
   --reset-optimizer \
   --criterion base-loss \
