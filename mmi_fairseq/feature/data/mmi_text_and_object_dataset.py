@@ -13,18 +13,16 @@
 import numpy as np
 import torch
 from fairseq.data.fairseq_dataset import FairseqDataset
-from video_dialogue_model.data.object_dataset import ObjectDataset
-from video_dialogue_model.data.feature_dataset import FeatureDataset
+from mmi_fairseq.feature.data.object_dataset import ObjectDataset
 from fairseq.data import data_utils
 
 
-class TextObjectDataset(FairseqDataset):
+class MMITextObjectDataset(FairseqDataset):
     """
     A combine of text dataset and object dataset
     """
-    def __init__(self, image_dataset: ObjectDataset, feature_dataset: FeatureDataset, text_dataset, vocab_dict, span_idxs, shuffle=False):
+    def __init__(self, image_dataset: ObjectDataset, text_dataset, vocab_dict, span_idxs, shuffle=False):
         self.img_dataset = image_dataset
-        self.feature_dataset = feature_dataset
         self.text_dataset = text_dataset
         self.vocab_dict = vocab_dict
         self.span_idxs = span_idxs
@@ -33,40 +31,29 @@ class TextObjectDataset(FairseqDataset):
 
     def __getitem__(self, index):
         # todo: try to add [bos] at the beginning of text sequence to separate objects/texts
-        group_idx, start_idx, end_idx = self.span_idxs[index].tolist()
-        offsets = [self.get_1doffsets(group_idx, sent_idx) for sent_idx in range(start_idx, end_idx+1)]
-        objects, object_masks = zip(*[self.img_dataset[idx] for idx in offsets])
-        objects = np.stack(objects)  # [num_sent, num_objects, dim]
-        objects_mask = np.stack(object_masks)  # [num_sent, num_objects]
-        source_texts = np.concatenate([self.text_dataset[idx] for idx in offsets[:-1]])  # L
-        target = self.text_dataset[offsets[-1]]
-
-        source_imgs = np.stack([self.feature_dataset[idx] for idx in offsets])  # n * dim
+        is_true, start_idx, end_idx = self.span_idxs[index].tolist()
+        objects, objects_mask = self.img_dataset[start_idx] # max_obj * dim, max_obj
+        source_texts = self.text_dataset[end_idx]  # sent_len
+        target = self.text_dataset[end_idx] # will not be computed
 
         return {
             'id': index,
-            'objects': torch.FloatTensor(objects),
-            'objects_mask': torch.FloatTensor(objects_mask),
-            'source_imgs': torch.FloatTensor(source_imgs),
-            'source_texts': torch.LongTensor(source_texts),
+            'is_true': is_true,
+            'objects': objects,
+            'objects_mask': objects_mask,
+            'source_texts': source_texts,
             'target': torch.LongTensor(target)
         }
 
     def __len__(self):
         return len(self.span_idxs)
 
-    def get_1doffsets(self, group_idx, sent_idx):
-        group_offset = int(self.img_dataset.offsets[group_idx])
-        sent_num = int(self.img_dataset.sent_num[group_idx])
-        assert sent_idx < sent_num, f"origin text group {group_idx} has {sent_num} sents, " \
-                                    f" sent_idx {sent_idx} should be less than {sent_num}"
-        return group_offset + sent_idx
-
     def num_tokens(self, index):
         """Return the number of tokens in a sample. This value is used to
         enforce ``--max-tokens`` during batching."""
-        group_idx, start_idx, end_idx = self.span_idxs[index].tolist()
-        return len(self.text_dataset[self.get_1doffsets(group_idx, end_idx)])  # todo其实应该考虑src
+        is_true, start_idx, end_idx = self.span_idxs[index].tolist()
+        sum_tokens = len(self.text_dataset[start_idx])
+        return sum_tokens
 
     def size(self, index):
         """Return an example's size as a float or tuple. This value is used when
@@ -92,9 +79,9 @@ class TextObjectDataset(FairseqDataset):
         indices = []
         source_objects = []
         objects_mask = []
-        source_imgs = []
         source_texts = []
         source_lengths = []
+        source_label = []
         targets = []
 
         target_ntokens = 0
@@ -103,36 +90,34 @@ class TextObjectDataset(FairseqDataset):
             index = sample['id']
             indices.append(index)
 
-            source_imgs.append(sample['source_imgs'])
-            sent_num, max_object, rcnn_dim = sample["objects"].shape
-            source_objects.append(sample['objects'])  # [sent_num, max_obj, dim]
-            objects_mask.append(sample['objects_mask'])  # [sent_num, max_obj]
-            source_texts.append(sample['source_texts'])  # [token_num]
-            source_lengths.append(len(sample['source_texts']) + sent_num*max_object)
+            source_objects.append(sample["objects"])
+            objects_mask.append(sample["objects_mask"])
+            source_texts.append(torch.LongTensor(sample['source_texts']))
+            source_lengths.append(len(sample['source_texts']))
+            source_label.append(sample['is_true'])
 
-            targets.append(sample['target'])  # [token_num]
+            targets.append(sample['target'])
             target_ntokens += len(sample["target"])
-
         num_sentences = len(samples)
 
         indices = torch.tensor(indices, dtype=torch.long)
 
-        max_sent = max(x.size(0) for x in source_objects)
-        pad_imgs = torch.zeros([num_sentences, max_sent, self.feature_dataset.dim], dtype=torch.float)
-        for idx, imgs in enumerate(source_imgs):
-            pad_imgs[idx][: imgs.size(0)] = imgs
+        source_label_tensor = torch.tensor(source_label, dtype=torch.float)
 
-        pad_objects = torch.zeros([num_sentences, max_sent, self.max_obj, self.img_dataset.dim], dtype=torch.float)
-        pad_mask_objs = torch.zeros([num_sentences, max_sent, self.max_obj], dtype=torch.bool)
-        for idx, objs in enumerate(source_objects):
-            num_sent = objs.size(0)
-            pad_objects[idx][: num_sent] = objs
-            pad_mask_objs[idx][: num_sent] = objects_mask[idx][: num_sent]
+        source_lengths_tensor = torch.tensor(source_lengths, dtype=torch.long)
+
+        image_tensor = torch.tensor(source_objects, dtype=torch.float)
+
+        mask_tensor = torch.tensor(objects_mask, dtype=torch.float)
+
+        
 
         source_texts_batch = data_utils.collate_tokens(source_texts,
                                                        pad_idx=self.vocab_dict.pad(),
                                                        eos_idx=self.vocab_dict.eos(),
                                                        move_eos_to_beginning=False)
+
+        mask_ones = torch.ones((source_texts_batch.shape[0], source_texts_batch.shape[1]), dtype=torch.float) # B * T
 
         target_batch = data_utils.collate_tokens(targets,
                                                  pad_idx=self.vocab_dict.pad(),
@@ -147,10 +132,11 @@ class TextObjectDataset(FairseqDataset):
             'id': indices,
             'net_input': {
                 'src_tokens': source_texts_batch,
-                'src_imgs': pad_imgs,
-                'objs': pad_objects,
-                'objs_mask': pad_mask_objs,
-                'src_lengths': source_lengths,
+                'mask_ones': mask_ones,
+                'src_label': source_label_tensor,
+                'objs': image_tensor,
+                'objs_mask': mask_tensor,
+                'src_lengths': source_lengths_tensor,
                 'prev_output_tokens': prev_target_batch,
             },
             'target': target_batch,

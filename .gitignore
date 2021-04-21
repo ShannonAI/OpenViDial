@@ -1,4 +1,6 @@
 # Byte-compiled / optimized / DLL files
+mmi_test/
+result/
 __pycache__/
 *.py[cod]
 *$py.class
