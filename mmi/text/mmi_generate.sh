@@ -6,9 +6,10 @@ DATA_DIR="/data/yuxian/datasets/new-video/preprocessed_data"
 MODEL_DIR="/data/yuxian/datasets/new-video/models/object_lr2e-4"
 TYPE="objects"
 MODEL_PATH="${MODEL_DIR}/checkpoint_best.pt"
-NBEST=10
-BEAM=10
-SUBSET="valid"
+NBEST=5
+BEAM=5
+#SUBSET="valid"
+SUBSET="test"
 NBEST_FILE="${MODEL_DIR}/${SUBSET}_gen.out.${NBEST}best"
 
 
@@ -27,7 +28,7 @@ python ./train/generate.py \
 
 # 2. split nbest to different directorys
 NBEST_DIR="${MODEL_DIR}/${SUBSET}_best${NBEST}"
-python scripts/mmi/split_nbest.py \
+python ./mmi/text/split_nbest.py \
 --nbest-file $NBEST_FILE \
 --target-dir $NBEST_DIR \
 --nbest $NBEST
@@ -75,7 +76,7 @@ done
 # 4. weight average score.forward and score.backward for MMI generation
 ALPHA=0.5
 BIRECTION_OUTPUT="${NBEST_DIR}/bidirection${ALPHA}.out"
-python scripts/mmi/combine_bidirectional_score.py \
+python ./mmi/text/combine_bidirectional_score.py \
   --nbest-dir=$NBEST_DIR \
   --output-file=$BIRECTION_OUTPUT \
   --alpha $ALPHA
