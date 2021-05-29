@@ -74,7 +74,7 @@ done
 
 
 # 4. weight average score.forward and score.backward for MMI generation
-ALPHA=0.5
+ALPHA=0.037
 BIRECTION_OUTPUT="${NBEST_DIR}/bidirection${ALPHA}.out"
 python ./mmi/text/combine_bidirectional_score.py \
   --nbest-dir=$NBEST_DIR \
