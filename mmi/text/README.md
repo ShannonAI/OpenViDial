@@ -1,5 +1,5 @@
 # MMI Generation
-This directory contains **beta** scripts to do MMI generation.
+This directory contains scripts to do MMI-NV generation.
 
 ## 1.Train a Forward(src->tgt) Model
 See [../../README.md](../../README.md)

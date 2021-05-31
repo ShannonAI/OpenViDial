@@ -1,6 +1,6 @@
 # OpenViDial
 This repo contains downloading instructions for the **OpenViDial** dataset 
-in [《OpenViDial: A Large-Scale, Open-Domain Dialogue Dataset  with Visual Contexts》](https://arxiv.org/pdf/2012.15015.pdf) along with the code to reproduce results in the paper  (See Section [Baselines](#baselines)). 
+in [《OpenViDial: A Large-Scale, Open-Domain Dialogue Dataset  with Visual Contexts》](https://arxiv.org/pdf/2012.15015.pdf) along with the code to reproduce results in the paper [《Modeling Text-visual Mutual Dependency forMulti-modal dialog Generation》](). 
 
 ## Introduction
 When humans converse, what a speaker will
@@ -60,7 +60,7 @@ Data download:
 5. Move all files to `origin_dir`. 
 
 
-## Models
+## Vanilla Visual Dialog Models
 We proposed three models for this dataset. Please refer to the paper for details:
 * **Model #1 - NoVisual**: use only dialog texts without visual information
 
@@ -78,12 +78,6 @@ We proposed three models for this dataset. Please refer to the paper for details
 
 <div align="center">
   <img src="demo_data/model3.png"/>
-</div>
-
-Faster R-CNN is an object detection framework. The detection sample and attention over objects during text decoding is shown below.
-
-<div align="center">
-  <img src="demo_data/attention_over_objects.png"/>
 </div>
 
 ### Requirements
@@ -150,12 +144,29 @@ Remember to change `MODEL_DIR` and `DATA_DIR` for your setup. Please make sure y
 `bash scripts/reproduce_baselines/text_and_img_objects.sh` will train and evaluate FineVisual, 
 Remember to change `MODEL_DIR` and `DATA_DIR` for your setup. Please make sure you use one single gpu to reproduce our results.
 
+## MMI
+### Prepare training data
+For NV seeing [./mmi/text/README.md](./mmi/text/README.md). The structure of training data used in both CV and FV is same as the former part.
+
+### Train and Evaluate Model #4 - MI-NV
+`bash ./mmi/text/train.sh && bash ./mmi/text/mmi_generate.sh` will train and evaluate MI-NV. Remember to change all the `MODEL_DIR` and `DATA_DIR` for your setup. Please make sure you use one signle gpu to reproduce our results.
+
+### Train and Evaluate Model #5 - MI-CV
+`bash ./mmi/feature/scrtpts/train_image.sh && bash ./mmi/feature/scrtpts/mmi_feature_generate.sh` will train and evaluate MI-CV. Remember to change all the `MODEL_DIR` and `DATA_DIR` for your setup. Please make sure you use one signle gpu to reproduce our results.
+
+### Train and Evaluate Model #6 - MI-NV
+`bash ./mmi/feature/scrtpts/train_object.sh && bash ./mmi/feature/scrtpts/mmi_object_generate.sh` will train and evaluate MI-FV. Remember to change all the `MODEL_DIR` and `DATA_DIR` for your setup. Please make sure you use one signle gpu to reproduce our results.
+
 ### Other Statistics
-* get length/diversity/stopwords% statistics of system output: `train/stats.py`
+* get diversity statistics of system output: `train/stats.py`
+* get rouge statistics of system output: `train/rouge.py`
 
 ### Model benchmark
-| Model | BLEU-1 | BLEU-2 | BLEU-4 | Dis-1 | Dis-2 | Dis-3 | Dis-4 |
-| - | - | - | - | - | - | - | - |
-| 1-NV | 14.06 | 3.80 | 0.95 | 0.0006 | 0.0019 | 0.0031 | 0.0043 |
-| 2-CV | 14.70 | 4.38 | 1.14 | 0.0023 | 0.0090 | 0.0177 | 0.0272 |
-| 3-FV | 14.85 | 4.61 | 1.19 | 0.0026 | 0.0112 | 0.0246 | 0.0406 |
+| Model | BLEU-1 | BLEU-2 | BLEU-4 | Dis-1 | Dis-2 | Dis-3 | Dis-4 | ROUGE-1 | ROUGE-2 | ROUGE-4 |
+| - | - | - | - | - | - | - | - | - | - | - |
+| 1-NV | 14.06 | 3.80 | 0.95 | 0.0006 | 0.0019 | 0.0031 | 0.0043 | 0.06787 | 0.01464 | 0.00224 |
+| 2-CV | 14.70 | 4.38 | 1.14 | 0.0023 | 0.0090 | 0.0178 | 0.0272 | 0.08773 | 0.02067 | 0.00347 |
+| 3-FV | 14.85 | 4.61 | 1.19 | 0.0026 | 0.0112 | 0.0246 | 0.0406 | 0.09083 | 0.02085 | 0.00329 |
+| 4-MI-NV | 14.27 | 3.89 | 0.99 | 0.0006 | 0.0022 | 0.0036 | 0.0043 | 0.06918 | 0.01497 | 0.00238 |
+| 5-MI-CV | 14.77 | 4.46 | 1.16 | 0.0023 | 0.0091 | 0.0181 | 0.0272 | 0.08791 | 0.02077 | 0.00350 |
+| 6-MI-FV | 14.95 | 4.67 | 1.22 | 0.0027 | 0.0117 | 0.0261 | 0.0433 | 0.09100 | 0.02090 | 0.00338 |
