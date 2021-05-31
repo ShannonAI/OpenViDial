@@ -73,8 +73,6 @@ class MMIObjectTransformerModel(TransformerModel):
         Args:
             src_tokens (LongTensor): tokens in the source language of shape
                 `(batch, src_len)`
-            mask_ones (LongTensor): 0/1 tensort to mask the pad tokens
-                `(batch, src_len)`
             src_label (LongTensor): positive example or negative example
                 `(batch)`
             objs (FloatTensor): images features in the source sentences
