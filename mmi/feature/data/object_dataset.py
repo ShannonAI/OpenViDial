@@ -3,7 +3,7 @@
 import numpy as np
 from torch.utils.data import Dataset
 
-from mmi_fairseq.feature.data.utils import sent_num_file, offsets_file, object_file, object_mask_file, warmup_mmap_file
+from video_dialogue_model.data.utils import sent_num_file, offsets_file, object_file, object_mask_file, warmup_mmap_file
 
 class ObjectDataset(Dataset):
     MAX_OBJ = 20  # max-obj in mmap file

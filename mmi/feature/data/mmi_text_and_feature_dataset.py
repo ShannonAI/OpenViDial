@@ -13,7 +13,7 @@
 import numpy as np
 import torch
 from fairseq.data.fairseq_dataset import FairseqDataset
-from mmi_fairseq.feature.data.feature_dataset import FeatureDataset
+from mmi.feature.data.feature_dataset import FeatureDataset
 from fairseq.data import data_utils
 
 
@@ -26,12 +26,6 @@ class MMITextImageDataset(FairseqDataset):
         self.shuffle = shuffle
 
     def __getitem__(self, index):
-        '''
-        group_idx, start_idx, end_idx = self.span_idxs[index].tolist()
-        source_imgs = np.stack([self.img_dataset[idx] for idx in range(start_idx, end_idx)])  # n * dim
-        source_texts = [self.text_dataset[idx] for idx in range(start_idx+1, end_idx+1)]  # n * sent_len
-        target = self.text_dataset[end_idx] # will not be computed
-        '''
         is_true, start_idx, end_idx = self.span_idxs[index].tolist()
         source_imgs = self.img_dataset[start_idx]  # dim
         source_texts = self.text_dataset[end_idx]  # sent_len
@@ -51,12 +45,6 @@ class MMITextImageDataset(FairseqDataset):
     def num_tokens(self, index):
         """Return the number of tokens in a sample. This value is used to
         enforce ``--max-tokens`` during batching."""
-        '''
-        group_idx, start_idx, end_idx = self.span_idxs[index].tolist()
-        sum_tokens = 0
-        for i in range(start_idx+1, end_idx+1):
-            sum_tokens += len(self.text_dataset[i])
-        '''
         is_true, start_idx, end_idx = self.span_idxs[index].tolist()
         sum_tokens = len(self.text_dataset[start_idx])
         return sum_tokens
@@ -117,8 +105,6 @@ class MMITextImageDataset(FairseqDataset):
                                                        eos_idx=self.vocab_dict.eos(),
                                                        move_eos_to_beginning=False)
         
-        mask_ones = torch.ones((source_texts_batch.shape[0], source_texts_batch.shape[1]), dtype=torch.float) # B * T
-
         target_batch = data_utils.collate_tokens(targets,
                                                  pad_idx=self.vocab_dict.pad(),
                                                  eos_idx=self.vocab_dict.eos(),
@@ -132,7 +118,6 @@ class MMITextImageDataset(FairseqDataset):
             'id': indices,
             'net_input': {
                 'src_tokens': source_texts_batch,
-                'mask_ones': mask_ones,
                 'src_label': source_label_tensor,
                 'src_imgs': image_tensor,
                 'src_lengths': source_lengths_tensor,

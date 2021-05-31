@@ -4,12 +4,12 @@ import numpy as np
 import random
 import torch
 from fairseq.data import Dictionary, data_utils
-from mmi_fairseq.feature.data.utils import text_bin_file
+from video_dialogue_model.data.utils import text_bin_file
 from fairseq.tasks import register_task, FairseqTask
-from mmi_fairseq.feature.data.feature_dataset import FeatureDataset
-from mmi_fairseq.feature.data.mmi_text_and_feature_dataset import MMITextImageDataset
-from mmi_fairseq.feature.data.object_dataset import ObjectDataset
-from mmi_fairseq.feature.data.mmi_text_and_object_dataset import MMITextObjectDataset
+from mmi.feature.data.feature_dataset import FeatureDataset
+from mmi.feature.data.mmi_text_and_feature_dataset import MMITextImageDataset
+from mmi.feature.data.object_dataset import ObjectDataset
+from mmi.feature.data.mmi_text_and_object_dataset import MMITextObjectDataset
 
 
 @register_task('mmi-video-dialogue')

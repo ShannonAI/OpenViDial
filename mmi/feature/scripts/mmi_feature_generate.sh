@@ -49,7 +49,7 @@ for sub_dir in $(ls ${NBEST_DIR}); do
     continue
   fi
   echo "compute backward score of ${sub_dir}"
-  python ./mmi/feature/scrtpts/combine_new_test.py \
+  python ./mmi/feature/scripts/combine_new_test.py \
   --src-dir $DATA_DIR \
   --nbest-file $sub_dir/src-tgt.src \
   --target-dir $sub_dir/test_feature.src.txt
@@ -67,7 +67,7 @@ for sub_dir in $(ls ${NBEST_DIR}); do
   
   # backward generation
   out_file="${sub_dir}/gen.out"
-  python ./mmi/feature/scrtpts/generate.py \
+  python ./mmi/feature/scripts/generate.py \
   --user-dir mmi \
   --task mmi-video-dialogue \
   --img-type $TYPE \
