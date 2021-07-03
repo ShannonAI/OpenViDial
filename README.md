@@ -1,6 +1,8 @@
 # OpenViDial
-This repo contains downloading instructions for the **OpenViDial** dataset 
-in [《OpenViDial: A Large-Scale, Open-Domain Dialogue Dataset  with Visual Contexts》](https://arxiv.org/pdf/2012.15015.pdf) along with the code to reproduce results in the paper [《Modeling Text-visual Mutual Dependency forMulti-modal dialog Generation》](). 
+This repo contains downloading instructions for the **OpenViDial** dataset in 
+**[OpenViDial: A Large-Scale, Open-Domain Dialogue Dataset  with Visual Contexts](https://arxiv.org/pdf/2012.15015.pdf)**  
+along with the code to reproduce results in the paper
+**[Modeling Text-visual Mutual Dependency for Multi-modal dialog Generation](https://arxiv.org/pdf/2105.14445.pdf)**  
 
 ## Introduction
 When humans converse, what a speaker will
