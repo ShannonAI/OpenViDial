@@ -115,21 +115,13 @@ and followed with byte-pair-encoding and fairseq-preprocess binarization:
 ### Prepare pre-computed CNN features and Faster-RCNN features
 
 ##### Download CNN-pooling features(Used for Model #2 - CoarseVisual)
-Preprocessed ResNet50 features (`*.features.mmap`) 
-[(~4G) can be downloaded from here](https://drive.google.com/drive/folders/1wHY-hQqMHqXaqLLBar7HFGvjTPVOCECc?usp=sharing)
-and move them under `preprocessed_data_dir/`
+The compression file of preprocessed ResNet50 features (`feature_files.tar.gz`) [(~3.7G) can be downloaded from here](https://drive.google.com/drive/folders/1rLREH7GmlNa9uQKcx_KRp3qPwmDeBZup?usp=sharing). You can get preprocessed ResNet50 features (`*.features.mmap`) by command `tar zxvf feature_files.tar.gz` and move them under `preprocessed_data_dir/` 
 
 ##### Download Faster R-CNN features(Used for Model #3 - FineVisual)
-Preprocessed Faster R-CNN objects features (`*objects.mmap`, `*objects_mask.mmap`) 
-[(~160G) can be downloaded from here](https://drive.google.com/drive/folders/1p49gHmlQ-3X2hsX18gr7aoqFsJCwcMNt?usp=sharing)
-then move them under `preprocessed_data_dir/`
-
-Since file `train.objects.mmap` is too large(100G+), 
-we splitted it to many small pieces like `train.objects.mmap.split*`, 
-and you need another step to merge all those files together: `cat train.objects.mmap.split* >train.objects.mmap`  
+The compression file of preprocessed Faster R-CNN objects features (`object_files.tar.gz`) [(~50G) can be downloaded from here](https://drive.google.com/drive/folders/1s4-PPGL_mVBQHeNMwfsJpqJA1cAqJAGd?usp=sharing). You can get preprocessed Faster R-CNN objects features (`*objects.mmap`, `*objects_mask.mmap`) by command `tar zxvf object_files.tar.gz` and move them under `preprocessed_data_dir/`  
 
 ##### Checkout
-Each of files has a hash value by command `md5sum fileName`. You can get it from [here](https://drive.google.com/file/d/1wda5QVLLzHKa3366JixBKnE8RAVUcdR1/view?usp=sharing) and we suggest you check each file's hash value before training.
+Each of files has a hash value by command `md5sum fileName`. You can get it from [here](https://drive.google.com/file/d/1m8l5HfwN88j3NtXRuc3QbyxNC0AoweSl/view?usp=sharing) and we suggest you check each file's hash value before training.
 
 ##### (Optional) Extract features on your own
 If you want to extract some feature on your own, or you'd like to know details of extracting visual features, 
