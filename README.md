@@ -8,12 +8,14 @@ and the code to reproduce results based on the two **OpenViDial** datasets in th
 ## Introduction
 When humans converse, what a speaker will
 say next significantly depends on what he sees. OpenViDial is a largescale
-multi-module dialogue dataset for this purpose. The dialogue
+multi-module dialogue dataset for this purpose. Thes dialogue
 turns and visual contexts are extracted
 from movies and TV series, where each dialogue
 turn is paired with the corresponding
-visual context in which it takes place. OpenViDial contains a total number of 1.1 million
+visual context in which it takes place. Up to **2022.01.22** OpenViDial has two verseion: **OpenViDial 1.0** and **OpenViDial 2.0**. For **OpenViDial 1.0**, it contains a total number of 1.1 million
 dialogue turns, and thus 1.1 million visual contexts
+stored in images. For **OpenViDial 2.0**, it is much larger than the previous version OpenViDial 1.0 containing a total number of 5.6 million
+dialogue turns along with 5.6 million visual contexts
 stored in images.
 
 The following are  two short conversations where visual contexts are crucial.
